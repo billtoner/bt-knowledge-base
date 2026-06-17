@@ -25,7 +25,7 @@ Shell function (optional — add to `~/.zshrc` for `tool <name>`):
 
 ```bash
 tool() {
-    local repo="$HOME/Documents/repos/command-line"
+    local repo="$HOME/Documents/repos/bt-knowledge-base"
     if [[ -z "$1" ]]; then
         fd . "$repo/tool-notes" -e md | fzf --preview "bat --color=always {}" | xargs -r ${EDITOR:-bat}
     else

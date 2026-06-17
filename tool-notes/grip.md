@@ -45,7 +45,7 @@ grip --user=billtoner --pass=$GITHUB_TOKEN file.md
 ## Render in a repo's context
 
 ```bash
-grip --context=billtoner/command-line file.md      # #N, user/repo#N, @mentions resolve
+grip --context=billtoner/bt-knowledge-base file.md  # #N, user/repo#N, @mentions resolve
 grip --user-content file.md                        # render as comment/issue (task lists, @mentions)
 grip --gfm file.md                                  # force GitHub-Flavored Markdown mode
 ```
@@ -63,8 +63,8 @@ grip README.md --export --user-content    # export with issue/comment semantics
 
 ```bash
 # Preview this repo's index with working navigation
-cd ~/Documents/repos/command-line
-grip . -b                                 # browse to doc/command-line.md, click around
+cd ~/Documents/repos/bt-knowledge-base
+grip . -b                                 # browse to doc/bt-knowledge-base.md, click around
 
 # Share a one-page rendered note with a coworker
 grip notes/postmortem.md --export postmortem.html --no-inline

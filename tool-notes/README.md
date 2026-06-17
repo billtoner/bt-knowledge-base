@@ -4,7 +4,7 @@ The notes themselves. One file per tool, with real-world examples.
 
 This README is the **alphabetical view** — useful when you remember a
 tool's name but not its category. For category browsing, start at
-[`doc/command-line.md`](../doc/command-line.md) (categories) or one of
+[`doc/bt-knowledge-base.md`](../doc/bt-knowledge-base.md) (categories) or one of
 the [`doc/categories/`](../doc/categories/) files (tools per category).
 For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 
@@ -77,4 +77,4 @@ See [`../CLAUDE.md`](../CLAUDE.md). In short:
 2. Add a bullet to the appropriate `doc/categories/<cat>.md`.
 3. Add a bullet to this README (alphabetical position).
 4. If creating a new category, convert its placeholder in
-   `doc/command-line.md` to a link.
+   `doc/bt-knowledge-base.md` to a link.
