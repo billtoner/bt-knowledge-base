@@ -63,7 +63,7 @@ Not every section is mandatory — only `# title` + 1-line description + at leas
 
 ## When adding a new tool
 
-`kb add <tool>` (see `bin/kb`, documented in the README) automates all of the
+`kb add <tool>` (see `src/kb`, documented in the README) automates all of the
 below — scaffolding the note and wiring the category file, index link, and
 README bullet. The manual steps, when not using it:
 

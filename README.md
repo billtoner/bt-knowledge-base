@@ -9,17 +9,20 @@ A personal cheat-sheet of CLI tools and commands worth refreshing on. Each tool 
 
 ## Find and capture with `kb`
 
-`bin/kb` is the day-to-day driver — a curated, searchable shell history.
+`kb` is the day-to-day driver — a curated, searchable shell history. It's a small
+Python (Typer) CLI under `src/kb`; install it with pipx so it lands on your PATH:
 
 ```bash
-alias kb="$HOME/Documents/repos/bt-knowledge-base/bin/kb"   # add to ~/.zshrc
+pipx install ~/Documents/repos/bt-knowledge-base   # provides the `kb` command
 
 kb find <terms...>     # search every example by command, intent, or section;
                        # prints the snippet + a tool-notes/<x>.md:<line> pointer
+kb list [category]     # list categories and the tools under each (or just one)
+kb cats                # list category names only (the high-level buckets)
 kb add  <tool>         # editor-first capture: opens the right note at a ready
                        # template line, scaffolding + wiring a new tool/category
 kb open <tool>         # open a note in $EDITOR
-kb help                # full usage + the configured roots
+kb --help              # full usage + per-subcommand help
 ```
 
 ### Two repos, one tool
