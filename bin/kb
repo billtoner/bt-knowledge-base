@@ -10,6 +10,8 @@
 #                                tool-notes/<x>.md:<line> pointer you can click/open.
 #   kb add  <tool> [opts]        Editor-first capture. Opens the right note at a ready
 #                                template line; scaffolds + wires a new tool/category.
+#   kb list                      List existing categories and the tools under each
+#                                (across all roots); flags any unwired tool notes.
 #   kb open <tool>               Open a tool note in $EDITOR.
 #   kb help                      This text.
 #
@@ -394,6 +396,45 @@ add_readme_bullet() {
     print "  added bullet in ${TOOLS_README#$REPO/}"
 }
 
+kb_list() {
+    kb_load_roots
+    local multi=0; (( ${#KB_PATHS} > 1 )) && multi=1
+    local i root label cf name line tool desc n
+    for i in {1..${#KB_PATHS}}; do
+        label="${KB_LABELS[$i]}"; root="${KB_PATHS[$i]}"
+        local cats=("$root"/doc/categories/*.md(N))
+        (( multi )) && print -r -- "${C_PATH}[$label]${C_RST}"
+        typeset -A seen; seen=()
+        for cf in "${cats[@]}"; do
+            name=$(awk '/^# /{ sub(/^# /,""); print; exit }' "$cf")
+            [[ -n "$name" ]] || name="${cf:t:r}"
+            print -r -- "${C_CMD}${name}${C_RST}"
+            while IFS= read -r line; do
+                [[ "$line" == '- ['*']('* ]] || continue
+                tool="${line#*\]\(}"; tool="${tool%%\)*}"; tool="${tool:t:r}"
+                desc="${line#* — }"; [[ "$desc" == "$line" ]] && desc=""
+                [[ -n "$tool" ]] && seen[$tool]=1
+                if [[ -n "$desc" ]]; then
+                    print -r -- "  ${tool}  ${C_INT}${desc}${C_RST}"
+                else
+                    print -r -- "  ${tool}"
+                fi
+            done < "$cf"
+        done
+        # tool notes that exist but aren't referenced by any category file
+        local orphans=()
+        for n in "$root"/tool-notes/*.md(N); do
+            [[ "${n:t}" == "README.md" ]] && continue
+            [[ -n "${seen[${n:t:r}]}" ]] || orphans+=("${n:t:r}")
+        done
+        if (( ${#orphans} )); then
+            print -r -- "${C_SEC}(uncategorized)${C_RST}"
+            for n in "${orphans[@]}"; do print -r -- "  ${n}"; done
+        fi
+        (( ${#cats} || ${#orphans} )) || print -r -- "  ${C_INT}(no tools yet)${C_RST}"
+    done
+}
+
 kb_open() {
     (( $# )) || die "usage: kb open <tool>"
     kb_load_roots
@@ -413,6 +454,8 @@ usage:
   kb find <terms...>            Search examples across all roots; prints command + intent
                                 + a tool-notes/<x>.md:<line> pointer (tagged by repo).
   kb add  <tool> [opts]         Editor-first capture; scaffolds + wires a new tool/category.
+  kb list                       List existing categories and the tools under each
+                                (across all roots); flags any unwired tool notes.
   kb open <tool>                Open a tool note in \$EDITOR (searches all roots).
   kb help                       This text.
 
@@ -436,6 +479,7 @@ roots come from \$KB_ROOTS or ~/.config/kb/roots (label = path, one per line)."
 case "${1:-help}" in
     find|f|get)  shift; kb_find "$@" ;;
     add|put|a)   shift; kb_add "$@" ;;
+    list|ls|l)   shift; kb_list "$@" ;;
     open|o)      shift; kb_open "$@" ;;
     help|-h|--help) kb_help ;;
     *)           die "unknown subcommand: $1 (try: kb help)" ;;
