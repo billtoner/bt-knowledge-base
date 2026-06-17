@@ -37,6 +37,7 @@ tool() {
 ## Categories
 
 - Archiving
+- Build & Packaging
 - [Cloud CLIs](categories/cloud-clis.md)
 - Containers & Orchestration
 - [Databases](categories/databases.md)
@@ -45,11 +46,11 @@ tool() {
 - [Hardware & Devices](categories/hardware-devices.md)
 - [HTTP & API Clients](categories/http-api-clients.md)
 - [Infrastructure as Code](categories/infrastructure-as-code.md)
-- Installing packages
 - [Languages & Scripting](categories/languages-scripting.md)
 - [Markup & Docs](categories/markup-docs.md)
 - [Network Config & Firewall](categories/network-config-firewall.md)
 - [Network Diagnostics](categories/network-diagnostics.md)
+- Package Managers
 - [Performance & Profiling](categories/performance-profiling.md)
 - [Remote Access](categories/remote-access.md)
 - [Search](categories/search.md)

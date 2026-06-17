@@ -5,12 +5,16 @@ ones to Done with the date.
 
 ## Backlog
 
-- [ ] Reconcile the `Installing packages` placeholder with the agreed
-  `Build & Packaging` bucket — either rename it, or split system package
-  managers (apt, brew, dnf) from project build/packaging (make, cargo, npm, uv).
+_(empty)_
 
 ## Done
 
+- 2026-06-16 — Reconciled package/build buckets: renamed `Installing packages` →
+  `Package Managers` (OS/global installers: apt, brew, dnf, pacman, snap, pipx)
+  and added `Build & Packaging` (project build + language toolchains: make,
+  cmake, cargo, npm, uv, poetry). Boundary: installing something to use it →
+  Package Managers; building/running a project you wrote (incl. its deps) →
+  Build & Packaging.
 - 2026-06-16 — Replaced the generic `<Name> tools.` category intros with
   real one-line descriptions across all 17 buckets.
 
