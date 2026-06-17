@@ -18,9 +18,11 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [bat](bat.md) — `cat` with syntax highlighting, line numbers, and git status
 - [bluetoothctl](bluetoothctl.md) — interactive BlueZ Bluetooth control utility
 - [bq](bq.md) — BigQuery CLI; query, load, extract, manage datasets
+- [cron](cron.md) — scheduled jobs; crontab syntax + systemd-timer equivalents
 - [curl](curl.md) — HTTP(S) client; headers, methods, multipart, debug tracing
 - [db-browser-for-sqlite](db-browser-for-sqlite.md) — GUI for inspecting and editing SQLite databases
 - [delta](delta.md) — syntax-highlighted, side-by-side git diff viewer
+- [dmesg](dmesg.md) — kernel ring buffer; boot, hardware, OOM, driver messages
 - [docker](docker.md) — build, run, and manage containers and images (+ compose)
 - [eza](eza.md) — modern `ls` replacement with git status, icons, tree mode
 - [fd](fd.md) — `find` replacement; smart-case, gitignore-aware, parallel exec
@@ -33,6 +35,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [gsutil](gsutil.md) — Google Cloud Storage from the CLI (gsutil + gcloud storage)
 - [hcitool](hcitool.md) — lower-level Bluetooth utility (HCI commands, RSSI scans)
 - [helm](helm.md) — Kubernetes package manager; install/template/rollback releases
+- [htop](htop.md) — interactive process/resource monitor (htop; btop alt)
 - [httpie](httpie.md) — friendly HTTP client; JSON by default, colorized output
 - [ifconfig](ifconfig.md) — configure/inspect network interfaces (deprecated for `ip`)
 - [iwconfig](iwconfig.md) — configure/inspect wireless interfaces (deprecated for `iw`)
@@ -49,16 +52,22 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [nosql-workbench](nosql-workbench.md) — AWS GUI for DynamoDB schema design and querying
 - [packer](packer.md) — build identical machine/container images from one config
 - [pactl](pactl.md) — PulseAudio/PipeWire control utility
+- [perf](perf.md) — CPU counters, sampling profiles, flame-graph output
+- [pgrep](pgrep.md) — find and signal processes by name/attributes (pgrep, pkill)
+- [procs](procs.md) — a modern ps; colored, tree, search, ports
 - [pulumi](pulumi.md) — IaC in real languages; stacks, config, encrypted secrets
 - [py-spy](py-spy.md) — sampling profiler for running Python processes
 - [ripgrep](ripgrep.md) — `grep` replacement; recursive, smart-case, gitignore-aware
+- [sar](sar.md) — historical + live system stats (sar; dstat for live)
 - [scp](scp.md) — copy files over SSH; uses `~/.ssh/config` aliases
 - [sort](sort.md) — sort lines of text; numeric, by column, with deduplication
 - [sqlite-utils](sqlite-utils.md) — CLI for SQLite queries, dumps, and JSON imports
 - [sqlite3](sqlite3.md) — official SQLite CLI; schema, queries, pragmas
 - [ssh](ssh.md) — secure shell; remote exec, port forwarding, jump hosts
 - [ssh-add](ssh-add.md) — manage keys in the ssh-agent; macOS Keychain integration
+- [strace](strace.md) — trace syscalls and signals; first 'what is it doing' stop
 - [systemctl](systemctl.md) — control systemd services and units
+- [systemd-analyze](systemd-analyze.md) — boot timing and unit verification for systemd
 - [terraform](terraform.md) — provision infrastructure as code; plan, apply, state, workspaces
 - [terragrunt](terragrunt.md) — keep Terraform DRY across envs; remote state, module wiring
 - [tig](tig.md) — TUI for browsing git log, diff, blame, and refs
