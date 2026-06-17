@@ -28,16 +28,19 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [db-browser-for-sqlite](db-browser-for-sqlite.md) — GUI for inspecting and editing SQLite databases
 - [delta](delta.md) — syntax-highlighted, side-by-side git diff viewer
 - [df](df.md) — filesystem free space (df) and per-directory usage (du)
+- [direnv](direnv.md) — per-directory env vars, auto-loaded on cd
 - [dmesg](dmesg.md) — kernel ring buffer; boot, hardware, OOM, driver messages
 - [docker](docker.md) — build, run, and manage containers and images (+ compose)
 - [doggo](doggo.md) — modern colorized dig; JSON, DoH/DoT, multi-resolver
 - [eza](eza.md) — modern `ls` replacement with git status, icons, tree mode
 - [fd](fd.md) — `find` replacement; smart-case, gitignore-aware, parallel exec
 - [gcloud](gcloud.md) — Google Cloud CLI; auth, config, and GCP resources
+- [gh](gh.md) — GitHub from the terminal; PRs, issues, releases, Actions, API
 - [git](git.md) — version control fundamentals
 - [gitleaks](gitleaks.md) — scan repos/files for committed secrets (this repo's hook)
 - [glow](glow.md) — render markdown in the terminal (pairs with kb show)
 - [go](go.md) — the Go toolchain; build, test, run, modules, vet
+- [go-one-liners](go-one-liners.md) — quick Go from the shell; go run, docs, stdlib snippets
 - [gpg](gpg.md) — encrypt, sign, verify; OpenPGP key management
 - [gradle](gradle.md) — JVM builds (Gradle + Maven); tasks, deps, wrapper
 - [graphviz](graphviz.md) — diagrams as code; render DOT graphs to SVG/PNG
@@ -75,7 +78,9 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [perf](perf.md) — CPU counters, sampling profiles, flame-graph output
 - [pgrep](pgrep.md) — find and signal processes by name/attributes (pgrep, pkill)
 - [pipx](pipx.md) — install Python CLI apps in isolated venvs
+- [pre-commit](pre-commit.md) — manage/run git pre-commit hooks (ruff/pytest/secret scan)
 - [procs](procs.md) — a modern ps; colored, tree, search, ports
+- [psql](psql.md) — the PostgreSQL client; meta-commands, scripting, COPY, EXPLAIN
 - [pulumi](pulumi.md) — IaC in real languages; stacks, config, encrypted secrets
 - [py-spy](py-spy.md) — sampling profiler for running Python processes
 - [qsv](qsv.md) — fast CSV toolkit; slice, stats, join, frequency, search
