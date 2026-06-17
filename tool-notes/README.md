@@ -12,12 +12,14 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 
 - [aiomonitor](aiomonitor.md) — telnet console into a running asyncio loop
 - [ansible](ansible.md) — configuration management and automation playbooks
+- [apt](apt.md) — Debian/Ubuntu packages (apt + dpkg low-level queries)
 - [atuin](atuin.md) — TUI fuzzy-search shell history backed by SQLite
 - [aws](aws.md) — AWS CLI v2; profiles, SSO, and every service API
 - [az](az.md) — Azure CLI; auth, subscriptions, and Azure resources
 - [bat](bat.md) — `cat` with syntax highlighting, line numbers, and git status
 - [bluetoothctl](bluetoothctl.md) — interactive BlueZ Bluetooth control utility
 - [bq](bq.md) — BigQuery CLI; query, load, extract, manage datasets
+- [brew](brew.md) — Homebrew for macOS/Linux; formulae, casks, services
 - [cron](cron.md) — scheduled jobs; crontab syntax + systemd-timer equivalents
 - [curl](curl.md) — HTTP(S) client; headers, methods, multipart, debug tracing
 - [db-browser-for-sqlite](db-browser-for-sqlite.md) — GUI for inspecting and editing SQLite databases
@@ -28,7 +30,9 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [fd](fd.md) — `find` replacement; smart-case, gitignore-aware, parallel exec
 - [gcloud](gcloud.md) — Google Cloud CLI; auth, config, and GCP resources
 - [git](git.md) — version control fundamentals
+- [gitleaks](gitleaks.md) — scan repos/files for committed secrets (this repo's hook)
 - [go](go.md) — the Go toolchain; build, test, run, modules, vet
+- [gpg](gpg.md) — encrypt, sign, verify; OpenPGP key management
 - [gradle](gradle.md) — JVM builds (Gradle + Maven); tasks, deps, wrapper
 - [grip](grip.md) — render local markdown via GitHub's API and serve on localhost
 - [gron](gron.md) — flatten JSON into greppable assignments; reversible
@@ -50,10 +54,13 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [make](make.md) — the ubiquitous build/task runner; targets, prereqs, parallelism
 - [nmcli](nmcli.md) — NetworkManager CLI; persistent profiles for Wi-Fi, Ethernet, VPN
 - [nosql-workbench](nosql-workbench.md) — AWS GUI for DynamoDB schema design and querying
+- [openssl](openssl.md) — TLS/crypto swiss army knife; certs, keys, CSRs, server debug
 - [packer](packer.md) — build identical machine/container images from one config
 - [pactl](pactl.md) — PulseAudio/PipeWire control utility
+- [pass](pass.md) — Unix password store; gpg-encrypted files in a git repo
 - [perf](perf.md) — CPU counters, sampling profiles, flame-graph output
 - [pgrep](pgrep.md) — find and signal processes by name/attributes (pgrep, pkill)
+- [pipx](pipx.md) — install Python CLI apps in isolated venvs
 - [procs](procs.md) — a modern ps; colored, tree, search, ports
 - [pulumi](pulumi.md) — IaC in real languages; stacks, config, encrypted secrets
 - [py-spy](py-spy.md) — sampling profiler for running Python processes
@@ -72,6 +79,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [terragrunt](terragrunt.md) — keep Terraform DRY across envs; remote state, module wiring
 - [tig](tig.md) — TUI for browsing git log, diff, blame, and refs
 - [uv](uv.md) — fast Python project/dependency/env manager
+- [vault](vault.md) — HashiCorp Vault; auth, KV secrets, dynamic creds, transit
 - [vd](vd.md) — VisiData TUI spreadsheet; opens CSV/JSON/SQLite/Parquet
 - [viztracer](viztracer.md) — trace-based async profiler with browser viewer
 - [watch](watch.md) — re-run a command periodically; highlight changes

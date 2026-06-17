@@ -50,11 +50,11 @@ tool() {
 - [Markup & Docs](categories/markup-docs.md)
 - [Network Config & Firewall](categories/network-config-firewall.md)
 - [Network Diagnostics](categories/network-diagnostics.md)
-- Package Managers
+- [Package Managers](categories/package-managers.md)
 - [Performance & Profiling](categories/performance-profiling.md)
 - [Remote Access](categories/remote-access.md)
 - [Search](categories/search.md)
-- Security & Secrets
+- [Security & Secrets](categories/security-secrets.md)
 - [Shell & Terminal](categories/shell-terminal.md)
 - [System & Services](categories/system-services.md)
 - [Text & Data Processing](categories/text-data-processing.md)
