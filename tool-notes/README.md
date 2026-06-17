@@ -10,10 +10,12 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 
 ## Tools
 
+- [7z](7z.md) — high-ratio multi-format archiver with AES-256
 - [aiomonitor](aiomonitor.md) — telnet console into a running asyncio loop
 - [ansible](ansible.md) — configuration management and automation playbooks
 - [apt](apt.md) — Debian/Ubuntu packages (apt + dpkg low-level queries)
 - [atuin](atuin.md) — TUI fuzzy-search shell history backed by SQLite
+- [awk](awk.md) — field/record text processing; the pattern-action workhorse
 - [aws](aws.md) — AWS CLI v2; profiles, SSO, and every service API
 - [az](az.md) — Azure CLI; auth, subscriptions, and Azure resources
 - [bat](bat.md) — `cat` with syntax highlighting, line numbers, and git status
@@ -39,6 +41,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [gsutil](gsutil.md) — Google Cloud Storage from the CLI (gsutil + gcloud storage)
 - [hcitool](hcitool.md) — lower-level Bluetooth utility (HCI commands, RSSI scans)
 - [helm](helm.md) — Kubernetes package manager; install/template/rollback releases
+- [htmlq](htmlq.md) — jq for HTML; extract with CSS selectors
 - [htop](htop.md) — interactive process/resource monitor (htop; btop alt)
 - [httpie](httpie.md) — friendly HTTP client; JSON by default, colorized output
 - [ifconfig](ifconfig.md) — configure/inspect network interfaces (deprecated for `ip`)
@@ -64,9 +67,11 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [procs](procs.md) — a modern ps; colored, tree, search, ports
 - [pulumi](pulumi.md) — IaC in real languages; stacks, config, encrypted secrets
 - [py-spy](py-spy.md) — sampling profiler for running Python processes
+- [qsv](qsv.md) — fast CSV toolkit; slice, stats, join, frequency, search
 - [ripgrep](ripgrep.md) — `grep` replacement; recursive, smart-case, gitignore-aware
 - [sar](sar.md) — historical + live system stats (sar; dstat for live)
 - [scp](scp.md) — copy files over SSH; uses `~/.ssh/config` aliases
+- [sed](sed.md) — stream editing; substitutions, ranges, in-place edits
 - [sort](sort.md) — sort lines of text; numeric, by column, with deduplication
 - [sqlite-utils](sqlite-utils.md) — CLI for SQLite queries, dumps, and JSON imports
 - [sqlite3](sqlite3.md) — official SQLite CLI; schema, queries, pragmas
@@ -75,6 +80,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [strace](strace.md) — trace syscalls and signals; first 'what is it doing' stop
 - [systemctl](systemctl.md) — control systemd services and units
 - [systemd-analyze](systemd-analyze.md) — boot timing and unit verification for systemd
+- [tar](tar.md) — create/extract archives; the flags you always re-look-up
 - [terraform](terraform.md) — provision infrastructure as code; plan, apply, state, workspaces
 - [terragrunt](terragrunt.md) — keep Terraform DRY across envs; remote state, module wiring
 - [tig](tig.md) — TUI for browsing git log, diff, blame, and refs
@@ -84,8 +90,10 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [viztracer](viztracer.md) — trace-based async profiler with browser viewer
 - [watch](watch.md) — re-run a command periodically; highlight changes
 - [yq](yq.md) — YAML/TOML/JSON processor with jq-like syntax
+- [zip](zip.md) — ZIP archives for cross-platform interop (zip/unzip)
 - [zoxide](zoxide.md) — smarter `cd` based on frecency
 
+- [zstd](zstd.md) — fast modern compression; great ratios, tunable levels
 ## Quick search recipes
 
 From this directory:

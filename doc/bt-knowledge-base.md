@@ -36,7 +36,7 @@ tool() {
 
 ## Categories
 
-- Archiving
+- [Archiving](categories/archiving.md)
 - [Build & Packaging](categories/build-packaging.md)
 - [Cloud CLIs](categories/cloud-clis.md)
 - [Containers & Orchestration](categories/containers-orchestration.md)
