@@ -36,23 +36,25 @@ tool() {
 
 ## Categories
 
-- [Ansible](categories/ansible.md)
 - Archiving
-- [Audio](categories/audio.md)
-- [AWS CLI](categories/aws-cli.md)
-- [Bluetooth](categories/bluetooth.md)
+- [Cloud CLIs](categories/cloud-clis.md)
+- Containers & Orchestration
+- [Databases](categories/databases.md)
 - Disk
-- [File and Directory](categories/file-and-directory.md)
-- [Firewall](categories/firewall.md)
-- [Git](categories/git.md)
-- [Hardware Information](categories/hardware-information.md)
+- [Files & Directories](categories/files-directories.md)
+- [Hardware & Devices](categories/hardware-devices.md)
+- [HTTP & API Clients](categories/http-api-clients.md)
+- [Infrastructure as Code](categories/infrastructure-as-code.md)
 - Installing packages
-- [Languages](categories/languages.md)
-- [Linux Services](categories/linux-services.md)
-- [Network](categories/network.md)
-- [Performance and Monitoring](categories/performance-and-monitoring.md)
-- [Search and Sort](categories/search-and-sort.md)
-- System
-- [Text Processing](categories/text-processing.md)
-- [Useful Tools](categories/useful-tools.md)
-- [VPN](categories/vpn.md)
+- [Languages & Scripting](categories/languages-scripting.md)
+- [Markup & Docs](categories/markup-docs.md)
+- [Network Config & Firewall](categories/network-config-firewall.md)
+- [Network Diagnostics](categories/network-diagnostics.md)
+- [Performance & Profiling](categories/performance-profiling.md)
+- [Remote Access](categories/remote-access.md)
+- [Search](categories/search.md)
+- Security & Secrets
+- [Shell & Terminal](categories/shell-terminal.md)
+- [System & Services](categories/system-services.md)
+- [Text & Data Processing](categories/text-data-processing.md)
+- [Version Control](categories/version-control.md)

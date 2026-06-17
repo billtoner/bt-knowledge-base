@@ -1,5 +1,5 @@
-# AWS CLI
+# Cloud CLIs
 
-AWS-specific command-line tools.
+Cloud CLIs tools.
 
 - [NoSQL Workbench](../../tool-notes/nosql-workbench.md) — AWS GUI for designing and querying DynamoDB tables
