@@ -13,37 +13,43 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [aiomonitor](aiomonitor.md) — telnet console into a running asyncio loop
 - [ansible](ansible.md) — configuration management and automation playbooks
 - [atuin](atuin.md) — TUI fuzzy-search shell history backed by SQLite
-- [aws](aws.md) — AWS CLI v2 — profiles, SSO, and every service API
-- [az](az.md) — Azure CLI — auth, subscriptions, and Azure resources
+- [aws](aws.md) — AWS CLI v2; profiles, SSO, and every service API
+- [az](az.md) — Azure CLI; auth, subscriptions, and Azure resources
 - [bat](bat.md) — `cat` with syntax highlighting, line numbers, and git status
 - [bluetoothctl](bluetoothctl.md) — interactive BlueZ Bluetooth control utility
-- [bq](bq.md) — BigQuery CLI — query, load, extract, manage datasets
+- [bq](bq.md) — BigQuery CLI; query, load, extract, manage datasets
 - [curl](curl.md) — HTTP(S) client; headers, methods, multipart, debug tracing
 - [db-browser-for-sqlite](db-browser-for-sqlite.md) — GUI for inspecting and editing SQLite databases
 - [delta](delta.md) — syntax-highlighted, side-by-side git diff viewer
 - [docker](docker.md) — build, run, and manage containers and images (+ compose)
 - [eza](eza.md) — modern `ls` replacement with git status, icons, tree mode
 - [fd](fd.md) — `find` replacement; smart-case, gitignore-aware, parallel exec
-- [gcloud](gcloud.md) — Google Cloud CLI — auth, config, and GCP resources
+- [gcloud](gcloud.md) — Google Cloud CLI; auth, config, and GCP resources
 - [git](git.md) — version control fundamentals
+- [go](go.md) — the Go toolchain; build, test, run, modules, vet
+- [gradle](gradle.md) — JVM builds (Gradle + Maven); tasks, deps, wrapper
 - [grip](grip.md) — render local markdown via GitHub's API and serve on localhost
 - [gron](gron.md) — flatten JSON into greppable assignments; reversible
 - [gsutil](gsutil.md) — Google Cloud Storage from the CLI (gsutil + gcloud storage)
 - [hcitool](hcitool.md) — lower-level Bluetooth utility (HCI commands, RSSI scans)
-- [helm](helm.md) — Kubernetes package manager — install/template/rollback releases
+- [helm](helm.md) — Kubernetes package manager; install/template/rollback releases
 - [httpie](httpie.md) — friendly HTTP client; JSON by default, colorized output
 - [ifconfig](ifconfig.md) — configure/inspect network interfaces (deprecated for `ip`)
 - [iwconfig](iwconfig.md) — configure/inspect wireless interfaces (deprecated for `iw`)
 - [jc](jc.md) — convert standard Unix command output to JSON for jq pipelines
 - [journalctl](journalctl.md) — read and filter the systemd journal
 - [jq](jq.md) — command-line JSON processor
+- [just](just.md) — modern command runner; like make, but for tasks
 - [kubectl](kubectl.md) — Kubernetes control-plane CLI: query and manage cluster resources
 - [lazygit](lazygit.md) — full-screen TUI for git operations
 - [lsof](lsof.md) — list open files: ports, sockets, locked mounts, deleted-but-open files
 - [lsusb](lsusb.md) — list USB devices and their topology
+- [make](make.md) — the ubiquitous build/task runner; targets, prereqs, parallelism
 - [nmcli](nmcli.md) — NetworkManager CLI; persistent profiles for Wi-Fi, Ethernet, VPN
 - [nosql-workbench](nosql-workbench.md) — AWS GUI for DynamoDB schema design and querying
+- [packer](packer.md) — build identical machine/container images from one config
 - [pactl](pactl.md) — PulseAudio/PipeWire control utility
+- [pulumi](pulumi.md) — IaC in real languages; stacks, config, encrypted secrets
 - [py-spy](py-spy.md) — sampling profiler for running Python processes
 - [ripgrep](ripgrep.md) — `grep` replacement; recursive, smart-case, gitignore-aware
 - [scp](scp.md) — copy files over SSH; uses `~/.ssh/config` aliases
@@ -53,7 +59,10 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [ssh](ssh.md) — secure shell; remote exec, port forwarding, jump hosts
 - [ssh-add](ssh-add.md) — manage keys in the ssh-agent; macOS Keychain integration
 - [systemctl](systemctl.md) — control systemd services and units
+- [terraform](terraform.md) — provision infrastructure as code; plan, apply, state, workspaces
+- [terragrunt](terragrunt.md) — keep Terraform DRY across envs; remote state, module wiring
 - [tig](tig.md) — TUI for browsing git log, diff, blame, and refs
+- [uv](uv.md) — fast Python project/dependency/env manager
 - [vd](vd.md) — VisiData TUI spreadsheet; opens CSV/JSON/SQLite/Parquet
 - [viztracer](viztracer.md) — trace-based async profiler with browser viewer
 - [watch](watch.md) — re-run a command periodically; highlight changes
