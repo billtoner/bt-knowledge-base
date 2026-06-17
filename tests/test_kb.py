@@ -199,6 +199,54 @@ def test_move_dry_run_writes_nothing(repo: Root, monkeypatch):
     assert not (repo.categories_dir / "remote-access.md").exists()
 
 
+def test_list_sections():
+    assert notes.list_sections(SSH_NOTE) == ["Forwarding", "Jump hosts"]
+
+
+def test_add_section(repo: Root):
+    note = repo.notes_dir / "ssh.md"
+    line = capture.add_section(note, "Tunnels")
+    text = note.read_text()
+    assert notes.list_sections(text)[-1] == "Tunnels"
+    assert text.splitlines()[line - 1] == capture.TEMPLATE  # editor lands on the template
+
+
+def test_sections_command(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["sections", "ssh"])
+    assert r.exit_code == 0
+    assert r.output.splitlines() == ["Forwarding", "Jump hosts"]
+
+
+def test_add_new_section(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")  # no-op so open_at doesn't launch an editor
+    r = runner.invoke(app, ["add", "ssh", "--new-section", "Tunnels"])
+    assert r.exit_code == 0
+    assert "## Tunnels" in (repo.notes_dir / "ssh.md").read_text()
+
+
+def test_add_new_section_existing_errors(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    r = runner.invoke(app, ["add", "ssh", "--new-section", "Forwarding"])
+    assert r.exit_code == 1
+
+
+def test_list_verbose_shows_sections(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["list", "-v"])
+    assert r.exit_code == 0
+    assert "Forwarding" in r.output and "Jump hosts" in r.output
+
+
+def test_cats_verbose_shows_counts(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["cats", "-v"])
+    assert r.exit_code == 0
+    assert "Network  (1)" in r.output
+
+
 def test_root_for():
     pub = Root("pub", Path("/tmp/pub"))
     priv = Root("private", Path("/tmp/private"))

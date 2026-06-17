@@ -33,6 +33,7 @@ _ALIASES = {
     "categories": "cats",
     "o": "open",
     "mv": "move",
+    "sec": "sections",
 }
 
 
@@ -45,8 +46,29 @@ app = typer.Typer(
     cls=AliasGroup,
     add_completion=False,
     no_args_is_help=True,
-    help="get/put for your knowledge-base notes (a curated, searchable shell history).",
+    rich_markup_mode="markdown",
 )
+
+
+@app.callback()
+def _root() -> None:
+    """
+    Curated, searchable shell history — get/put for your knowledge-base notes.
+
+    **Common tasks**
+
+    - `kb find <terms>` — search every example (command, intent, or section)
+    - `kb list [category]` — categories and the tools under each
+    - `kb list -c` / `kb cats` — category names only
+    - `kb list -v` — tools with each one's sections
+    - `kb sections <tool>` — a tool's section headings
+    - `kb add <tool> --category <C>` — new tool (category created if new)
+    - `kb add <tool> --section "<H>"` — append under an existing section
+    - `kb add <tool> --new-section "<H>"` — create a section, then capture
+    - `kb move <tool> <category>` — recategorize a tool
+    - `kb open <tool>` — open a note in $EDITOR
+    """
+
 
 # --- colors (only when stdout is a tty) ---
 _TTY = sys.stdout.isatty()
@@ -92,7 +114,7 @@ def open_at(path: Path, line: int) -> None:
     subprocess.run(cmd)
 
 
-def _emit_categories(roots: list[Root]) -> None:
+def _emit_categories(roots: list[Root], verbose: bool = False) -> None:
     """Print category names only (shared by `cats` and `list --categories`)."""
     multi = len(roots) > 1
     for root in roots:
@@ -103,7 +125,10 @@ def _emit_categories(roots: list[Root]) -> None:
             typer.echo(f"  {INT}(no categories yet){RST}")
             continue
         for c in cats_:
-            typer.echo(c.name)
+            if verbose:
+                typer.echo(f"{c.name}  {INT}({len(c.tools)}){RST}")
+            else:
+                typer.echo(c.name)
 
 
 # ---------------------------------------------------------------------------
@@ -138,11 +163,14 @@ def list_cmd(
     categories: bool = typer.Option(
         False, "--categories", "-c", help="show only category names (no tools)"
     ),
+    verbose: bool = typer.Option(
+        False, "--verbose", "-v", help="show each tool's sections (or counts with -c)"
+    ),
 ) -> None:
     """List categories and the tools under each; pass a category to show just that one."""
     roots = _roots()
     if categories:
-        _emit_categories(roots)
+        _emit_categories(roots, verbose)
         return
     multi = len(roots) > 1
     filt = capture.kebab(category) if category else ""
@@ -163,6 +191,11 @@ def list_cmd(
                     typer.echo(f"  {t.slug}  {INT}{t.desc}{RST}")
                 else:
                     typer.echo(f"  {t.slug}")
+                if verbose:
+                    note = root.notes_dir / f"{t.slug}.md"
+                    if note.is_file():
+                        for s in notes.list_sections(note.read_text()):
+                            typer.echo(f"      {INT}{s}{RST}")
         if filt:
             continue
         orphans = notes.orphan_tools(root, cats)
@@ -177,9 +210,27 @@ def list_cmd(
 
 
 @app.command()
-def cats() -> None:
+def cats(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="show tool counts"),
+) -> None:
     """List category names only (the high-level buckets)."""
-    _emit_categories(_roots())
+    _emit_categories(_roots(), verbose)
+
+
+@app.command()
+def sections(tool: str = typer.Argument(..., help="tool note whose sections to list")) -> None:
+    """List the section headings in a tool note (searches all roots)."""
+    for root in _roots():
+        note = root.notes_dir / f"{tool}.md"
+        if note.is_file():
+            secs = notes.list_sections(note.read_text())
+            if not secs:
+                typer.echo(f"{INT}(no sections){RST}")
+                return
+            for s in secs:
+                typer.echo(s)
+            return
+    _die(f"no tool note: {tool} (try: kb find {tool})")
 
 
 @app.command("open")
@@ -196,7 +247,8 @@ def open_cmd(tool: str = typer.Argument(..., help="tool note to open")) -> None:
 @app.command()
 def add(
     tool: str = typer.Argument(..., help="tool note to capture into"),
-    section: str = typer.Option("", "--section", help="section to capture under"),
+    section: str = typer.Option("", "--section", help="existing section to capture under"),
+    new_section: str = typer.Option("", "--new-section", help="create this section, then capture"),
     category: str = typer.Option("", "--category", help="category for a NEW tool"),
     desc: str = typer.Option("", "--desc", help="description for a NEW tool's title"),
     private: bool = typer.Option(False, "--private", help="write to the private root"),
@@ -219,12 +271,24 @@ def add(
         return str(Path(p).relative_to(rt.path))
 
     if note.is_file():
+        if section and new_section:
+            _die("pass either --section or --new-section, not both")
+        if new_section:
+            if new_section in notes.list_sections(note.read_text()):
+                _die(f"section '{new_section}' already exists in {rel(note)} — use --section")
+            if dry_run:
+                typer.echo(f"DRY-RUN: would add section '{new_section}' to {rel(note)}")
+                return
+            line = capture.add_section(note, new_section)
+            typer.echo(f"Added section '{new_section}' to {rel(note)}:{line} — fill it in.")
+            open_at(note, line)
+            return
         insert_line = capture.find_insert_line(note.read_text(), section)
         if not insert_line:
             if section:
                 _die(
                     f'no bash example block under section "{section}" in {rel(note)} '
-                    "(check the heading, or omit --section)"
+                    "(check the heading, or use --new-section to create it)"
                 )
             _die(f"no bash example block in {rel(note)}; add one first or pass --section")
         if dry_run:
@@ -238,6 +302,8 @@ def add(
         return
 
     # New note: scaffold + wire category + README + index.
+    if new_section:
+        _die(f"{tool} doesn't exist yet — create it with --category first")
     if not category:
         category = typer.prompt(f"Category for new tool '{tool}' (e.g. Network)")
     if not category:

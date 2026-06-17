@@ -65,6 +65,17 @@ def insert_template(path: Path, insert_line: int, template: str = TEMPLATE) -> N
     path.write_text("".join(lines))
 
 
+def add_section(path: Path, heading: str, template: str = TEMPLATE) -> int:
+    """Append a new '## heading' + bash block to a note. Returns the 1-based line
+    of the inserted template line (for the editor to land on)."""
+    text = path.read_text()
+    if not text.endswith("\n"):
+        text += "\n"
+    text += f"\n## {heading}\n\n```bash\n{template}\n```\n"
+    path.write_text(text)
+    return len(text.splitlines()) - 1  # template sits just above the closing fence
+
+
 # ---------------------------------------------------------------------------
 # new notes: scaffold + wire category + index + README
 # ---------------------------------------------------------------------------

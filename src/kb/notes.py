@@ -21,6 +21,8 @@ _INDEXABLE_FENCES = {"", "bash", "sh", "shell", "zsh", "console"}
 _BULLET_RE = re.compile(r"^- \[(?P<display>[^\]]*)\]\((?P<target>[^)]*)\)(?:\s+—\s+(?P<desc>.*))?$")
 # Inline intent: first run of whitespace followed by '#'.
 _INTENT_RE = re.compile(r"[ \t]+#")
+# A '## heading' (or deeper) section title.
+_SECTION_RE = re.compile(r"^#{2,}\s+(.*)$")
 
 
 @dataclass(frozen=True)
@@ -74,6 +76,21 @@ def list_categories(root: Root) -> list[Category]:
     if not cat_dir.is_dir():
         return []
     return [parse_category(p) for p in sorted(cat_dir.glob("*.md"))]
+
+
+def list_sections(text: str) -> list[str]:
+    """The '## heading' section titles in a note (ignoring headings inside fences)."""
+    out: list[str] = []
+    in_block = False
+    for line in text.splitlines():
+        if line.startswith("```"):
+            in_block = not in_block
+            continue
+        if not in_block:
+            m = _SECTION_RE.match(line)
+            if m:
+                out.append(m.group(1).strip())
+    return out
 
 
 def find_tool_category(root: Root, tool: str) -> tuple[Category, ToolRef] | None:
