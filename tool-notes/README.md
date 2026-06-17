@@ -31,6 +31,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [journalctl](journalctl.md) — read and filter the systemd journal
 - [jq](jq.md) — command-line JSON processor
 - [lazygit](lazygit.md) — full-screen TUI for git operations
+- [lsof](lsof.md) — list open files: ports, sockets, locked mounts, deleted-but-open files
 - [lsusb](lsusb.md) — list USB devices and their topology
 - [nmcli](nmcli.md) — NetworkManager CLI; persistent profiles for Wi-Fi, Ethernet, VPN
 - [nosql-workbench](nosql-workbench.md) — AWS GUI for DynamoDB schema design and querying
