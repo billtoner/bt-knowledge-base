@@ -63,6 +63,10 @@ Not every section is mandatory — only `# title` + 1-line description + at leas
 
 ## When adding a new tool
 
+`kb add <tool>` (see `bin/kb`, documented in the README) automates all of the
+below — scaffolding the note and wiring the category file, index link, and
+README bullet. The manual steps, when not using it:
+
 1. Write `tool-notes/<tool>.md` in the style above.
 2. Add a bullet to the appropriate `doc/categories/<cat>.md`.
 3. If the category file doesn't exist yet, create it, and convert its placeholder in `doc/bt-knowledge-base.md` to a link.

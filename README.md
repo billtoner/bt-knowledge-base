@@ -7,6 +7,39 @@ A personal cheat-sheet of CLI tools and commands worth refreshing on. Each tool 
 - **[doc/bt-knowledge-base.md](doc/bt-knowledge-base.md)** — the categorized index. Every tool lives under a category.
 - **[CLAUDE.md](CLAUDE.md)** — the three-tier structure (index → category files → tool notes) and the style rules for adding new entries.
 
+## Find and capture with `kb`
+
+`bin/kb` is the day-to-day driver — a curated, searchable shell history.
+
+```bash
+alias kb="$HOME/Documents/repos/bt-knowledge-base/bin/kb"   # add to ~/.zshrc
+
+kb find <terms...>     # search every example by command, intent, or section;
+                       # prints the snippet + a tool-notes/<x>.md:<line> pointer
+kb add  <tool>         # editor-first capture: opens the right note at a ready
+                       # template line, scaffolding + wiring a new tool/category
+kb open <tool>         # open a note in $EDITOR
+kb help                # full usage + the configured roots
+```
+
+### Two repos, one tool
+
+`kb` searches across multiple knowledge-base roots and writes to a chosen one.
+Configure them in `~/.config/kb/roots` (or the `$KB_ROOTS` env var):
+
+```
+# label = path   (the FIRST root is the default write target)
+pub  = ~/Documents/repos/bt-knowledge-base
+priv = ~/Documents/repos/bt-knowledge-base-private
+```
+
+`kb find` searches **all** roots and tags each hit `[pub]` / `[priv]`. `kb add`
+writes to the default (public) root; pass `--private` (or `--repo <label>`) to
+target another, and it prints the destination so the target is never silent. The
+two repos share only this tooling and the conventions in `CLAUDE.md` — content
+stays separate. A root is skipped until it has a `tool-notes/` directory, so an
+unset-up private repo is harmless.
+
 ## Browse with rendered links
 
 ```bash
