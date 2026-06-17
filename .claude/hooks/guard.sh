@@ -3,9 +3,11 @@
 # PreToolUse hook. Fires on Bash, Read, Edit, Write, NotebookEdit.
 #
 # Priority order:
-#   1. Sensitive-path access (any tool, any method)  -> deny
-#   2. Destructive / network / escalation Bash        -> deny
-#   3. Known read-only command (no shell metachars)   -> allow
+#   1. Sensitive-path access (any tool, any method)   -> deny
+#   2. Catastrophic / network / escalation Bash        -> deny
+#   3. Destructive-but-recoverable Bash                -> ask  (prompt to approve)
+#      (rm, chmod, chown, git reset|clean)
+#   4. Known read-only command (no shell metachars)    -> allow
 #   else: stay silent (exit 0) and defer to settings.json / normal prompt.
 #
 # Parsing uses python3 (no jq dependency). exit 1 is never used because it
@@ -15,7 +17,10 @@
 set -uo pipefail
 
 SENSITIVE='(\.env($|[^a-zA-Z])|\.env\.|/\.aws/|aws/credentials|\.ssh/|id_rsa|id_ed25519|\.pem($|[^a-zA-Z])|secrets?/|credentials|\.netrc|\.pgpass|terraform\.tfstate|\.git/config)'
-DANGER='(\brm\b|\bsudo\b|\bdd\b|\bmkfs\b|\bcurl\b|\bwget\b|\bnc\b|\bssh\b|\bscp\b|\bchmod\b|\bchown\b|\bgit\s+push\b|\bgit\s+reset\b|\bgit\s+clean\b|\baws\s+s3\s+rm\b|>\s*/|\btruncate\b|\bshred\b)'
+# Hard-deny: catastrophic, outbound, or privilege escalation. No prompt.
+DENY_CMDS='(\bsudo\b|\bdd\b|\bmkfs\b|\bcurl\b|\bwget\b|\bnc\b|\bssh\b|\bscp\b|\bgit\s+push\b|\baws\s+s3\s+rm\b|>\s*/|\btruncate\b|\bshred\b)'
+# Ask-first: destructive but recoverable/intentional. Prompt to approve.
+ASK_CMDS='(\brm\b|\bchmod\b|\bchown\b|\bgit\s+reset\b|\bgit\s+clean\b)'
 SAFE_CMDS='^(cd|ls|cat|grep|rg|find|head|tail|wc|awk|sed|pwd|echo|which|whereis|stat|file|tree|less|more|sort|uniq|diff|cut|tr|jq|date|env|printenv|whoami|hostname|uname|df|du|ps|top|vcgencmd|systemctl status|journalctl|git status|git log|git diff|git show|git branch)\b'
 
 PY=$(command -v python3 || command -v python || true)
@@ -52,6 +57,11 @@ deny() {
   printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":%s}}\n' "$reason"
   exit 0
 }
+ask() {
+  reason=$("$PY" -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$1")
+  printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"ask","permissionDecisionReason":%s}}\n' "$reason"
+  exit 0
+}
 allow() {
   printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow"}}\n'
   exit 0
@@ -69,8 +79,11 @@ case "$tool" in
     if printf '%s' "$cmd" | grep -Eiq "$SENSITIVE"; then
       deny "Blocked by policy: command references a protected/sensitive path. Refused."
     fi
-    if printf '%s' "$cmd" | grep -Eq "$DANGER"; then
+    if printf '%s' "$cmd" | grep -Eq "$DENY_CMDS"; then
       deny "Blocked by policy: destructive/network/escalation command. User must run manually if intended."
+    fi
+    if printf '%s' "$cmd" | grep -Eq "$ASK_CMDS"; then
+      ask "Destructive command (rm/chmod/chown/git reset|clean). Approve only if you intend it."
     fi
     if printf '%s' "$cmd" | grep -Eq '[|;&]|\$\(|`|>|<'; then
       exit 0
