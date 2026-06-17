@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Edit|Write|NotebookEdit",
+        "hooks": [
+          { "type": "command", "command": "/Users/toner/.claude/hooks/guard.sh" }
+        ]
+      }
+    ]
+  }
+}
