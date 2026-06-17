@@ -1,0 +1,20 @@
+[project]
+name = "bt-kb"
+version = "0.1.0"
+description = "get/put for the bt-knowledge-base notes repo (curated, searchable shell history)"
+requires-python = ">=3.10"
+dependencies = ["typer>=0.12"]
+
+[project.scripts]
+kb = "kb.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
