@@ -1,6 +1,6 @@
 # Languages & Scripting
 
-Languages & Scripting tools.
+Throwaway one-liners and shell idioms for Python, JavaScript, Perl, and Bash.
 
 - [python-one-liners](../../tool-notes/python-one-liners.md) — `python3 -c '...'`, `-m http.server`, JSON munging, encoding, random tokens, date math
 - [javascript-one-liners](../../tool-notes/javascript-one-liners.md) — `node -e '...'`, useful `npx` tools, Buffer-based encoding

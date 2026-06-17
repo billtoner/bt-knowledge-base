@@ -1,6 +1,6 @@
 # Performance & Profiling
 
-Performance & Profiling tools.
+Watching commands and profiling running processes.
 
 - [watch](../../tool-notes/watch.md) — re-run a command on an interval; highlight changes, wait-for-change
 - [py-spy](../../tool-notes/py-spy.md) — sampling profiler that attaches to running Python processes

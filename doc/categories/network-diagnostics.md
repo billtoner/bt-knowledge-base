@@ -1,6 +1,6 @@
 # Network Diagnostics
 
-Network Diagnostics tools.
+Probing DNS, ports, routes, packets, and bandwidth when the network misbehaves.
 
 - [dig](../../tool-notes/dig.md) — DNS lookups, authoritative queries, `+trace` from the root, resolver comparison
 - [host](../../tool-notes/host.md) — friendlier one-shot DNS lookups; A/AAAA/MX/TXT in one line

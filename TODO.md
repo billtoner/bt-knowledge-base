@@ -8,11 +8,11 @@ ones to Done with the date.
 - [ ] Reconcile the `Installing packages` placeholder with the agreed
   `Build & Packaging` bucket — either rename it, or split system package
   managers (apt, brew, dnf) from project build/packaging (make, cargo, npm, uv).
-- [ ] Refine the auto-generated category intros. `kb` scaffolds new category
-  files with a generic `<Name> tools.` line; replace each with a one-line
-  description of what the bucket holds.
 
 ## Done
+
+- 2026-06-16 — Replaced the generic `<Name> tools.` category intros with
+  real one-line descriptions across all 17 buckets.
 
 - 2026-06-16 — Re-bucketed to the function-first taxonomy (comprehensive option,
   Title-Case display names). Migrated 66 tools out of 16 old categories into 17

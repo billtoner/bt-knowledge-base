@@ -1,6 +1,6 @@
 # Version Control
 
-Version Control tools.
+Git, plus the tools that make its history and diffs readable.
 
 - [git](../../tool-notes/git.md) — the core tool itself; stash, log, diff, reflog, worktrees, bisect, rebase, safe push
 - [delta](../../tool-notes/delta.md) — syntax-highlighted, language-aware git diff pager

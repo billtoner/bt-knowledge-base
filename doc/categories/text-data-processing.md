@@ -1,6 +1,6 @@
 # Text & Data Processing
 
-Text & Data Processing tools.
+Filtering and reshaping structured text: JSON, YAML, columns, and tables.
 
 - [jq](../../tool-notes/jq.md) — command-line JSON processor; filter, transform, and reshape JSON
 - [yq](../../tool-notes/yq.md) — YAML/JSON/XML processor with jq-style syntax; preserves YAML comments on in-place edits

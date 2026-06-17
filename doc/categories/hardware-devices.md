@@ -1,6 +1,6 @@
 # Hardware & Devices
 
-Hardware & Devices tools.
+Inspecting and controlling USB, Bluetooth, and audio devices.
 
 - [lsusb](../../tool-notes/lsusb.md) — list USB devices; tree view, filter by vendor/product ID
 - [bluetoothctl](../../tool-notes/bluetoothctl.md) — interactive and scripted control of BlueZ; pair, advertise, manage controllers

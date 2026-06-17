@@ -1,6 +1,6 @@
 # Network Config & Firewall
 
-Network Config & Firewall tools.
+Configuring interfaces, Wi-Fi, routing, firewalls, and VPN tunnels.
 
 - [ip](../../tool-notes/ip.md) — addresses, links, routes, neighbors, namespaces; the modern replacement for `ifconfig`/`route`/`arp`
 - [nmcli](../../tool-notes/nmcli.md) — NetworkManager CLI; persistent profiles for Wi-Fi, Ethernet, VPN, hotspot
