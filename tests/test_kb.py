@@ -1,9 +1,13 @@
 from pathlib import Path
 
 import pytest
+from typer.testing import CliRunner
 
 from kb import capture, notes
+from kb.cli import app
 from kb.roots import Root, root_for
+
+runner = CliRunner()
 
 SSH_NOTE = """\
 # ssh
@@ -125,6 +129,18 @@ def test_add_readme_bullet_alpha(repo: Root):
     readme = repo.readme.read_text()
     # curl sorts before ssh
     assert readme.index("[curl]") < readme.index("[ssh]")
+
+
+def test_list_categories_flag_matches_cats(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    flag = runner.invoke(app, ["list", "--categories"])
+    sub = runner.invoke(app, ["cats"])
+    assert flag.exit_code == 0
+    assert sub.exit_code == 0
+    assert flag.output == sub.output
+    assert "Network" in flag.output
+    # the -c short form is equivalent
+    assert runner.invoke(app, ["list", "-c"]).output == flag.output
 
 
 def test_root_for():

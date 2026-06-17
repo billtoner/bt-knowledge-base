@@ -4,6 +4,7 @@ A curated, searchable "select shell history": commands worth keeping, each paire
 with the reason you kept it (the inline `# intent` comment), living in
 tool-notes/*.md under the three-tier structure (see CLAUDE.md).
 """
+
 from __future__ import annotations
 
 import os
@@ -11,7 +12,7 @@ import shlex
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import NoReturn
 
 import typer
 from typer.core import TyperGroup
@@ -22,10 +23,14 @@ from .roots import Root, load_roots, root_for
 
 # --- command aliases (parity with the zsh dispatch) ---
 _ALIASES = {
-    "f": "find", "get": "find",
-    "a": "add", "put": "add",
-    "ls": "list", "l": "list",
-    "c": "cats", "categories": "cats",
+    "f": "find",
+    "get": "find",
+    "a": "add",
+    "put": "add",
+    "ls": "list",
+    "l": "list",
+    "c": "cats",
+    "categories": "cats",
     "o": "open",
 }
 
@@ -51,12 +56,12 @@ SEC = "\033[33m" if _TTY else ""
 RST = "\033[0m" if _TTY else ""
 
 
-def _die(msg: str) -> "typer.Exit":
+def _die(msg: str) -> NoReturn:
     typer.echo(f"kb: {msg}", err=True)
     raise typer.Exit(1)
 
 
-def _fallback() -> Optional[Root]:
+def _fallback() -> Root | None:
     cwd = Path.cwd()
     return Root(cwd.name, cwd) if (cwd / "tool-notes").is_dir() else None
 
@@ -70,7 +75,7 @@ def _roots() -> list[Root]:
 
 def _tilde(p: Path) -> str:
     s, home = str(p), str(Path.home())
-    return "~" + s[len(home):] if s.startswith(home) else s
+    return "~" + s[len(home) :] if s.startswith(home) else s
 
 
 def open_at(path: Path, line: int) -> None:
@@ -84,6 +89,20 @@ def open_at(path: Path, line: int) -> None:
     else:
         cmd = [*parts, str(path)]
     subprocess.run(cmd)
+
+
+def _emit_categories(roots: list[Root]) -> None:
+    """Print category names only (shared by `cats` and `list --categories`)."""
+    multi = len(roots) > 1
+    for root in roots:
+        cats_ = notes.list_categories(root)
+        if multi:
+            typer.echo(f"{PATH}[{root.label}]{RST}")
+        if not cats_:
+            typer.echo(f"  {INT}(no categories yet){RST}")
+            continue
+        for c in cats_:
+            typer.echo(c.name)
 
 
 # ---------------------------------------------------------------------------
@@ -114,10 +133,16 @@ def find(terms: list[str] = typer.Argument(..., help="search terms")) -> None:
 
 @app.command("list")
 def list_cmd(
-    category: Optional[str] = typer.Argument(None, help="show only this category"),
+    category: str | None = typer.Argument(None, help="show only this category"),
+    categories: bool = typer.Option(
+        False, "--categories", "-c", help="show only category names (no tools)"
+    ),
 ) -> None:
     """List categories and the tools under each; pass a category to show just that one."""
     roots = _roots()
+    if categories:
+        _emit_categories(roots)
+        return
     multi = len(roots) > 1
     filt = capture.kebab(category) if category else ""
     matched = False
@@ -153,17 +178,7 @@ def list_cmd(
 @app.command()
 def cats() -> None:
     """List category names only (the high-level buckets)."""
-    roots = _roots()
-    multi = len(roots) > 1
-    for root in roots:
-        cats_ = notes.list_categories(root)
-        if multi:
-            typer.echo(f"{PATH}[{root.label}]{RST}")
-        if not cats_:
-            typer.echo(f"  {INT}(no categories yet){RST}")
-            continue
-        for c in cats_:
-            typer.echo(c.name)
+    _emit_categories(_roots())
 
 
 @app.command("open")
@@ -198,14 +213,18 @@ def add(
     typer.echo(f"{SEC}→ {rt.label} repo:{RST} {_tilde(rt.path)}")
 
     note = rt.notes_dir / f"{tool}.md"
-    rel = lambda p: str(Path(p).relative_to(rt.path))
+
+    def rel(p) -> str:
+        return str(Path(p).relative_to(rt.path))
 
     if note.is_file():
         insert_line = capture.find_insert_line(note.read_text(), section)
         if not insert_line:
             if section:
-                _die(f'no bash example block under section "{section}" in {rel(note)} '
-                     "(check the heading, or omit --section)")
+                _die(
+                    f'no bash example block under section "{section}" in {rel(note)} '
+                    "(check the heading, or omit --section)"
+                )
             _die(f"no bash example block in {rel(note)}; add one first or pass --section")
         if dry_run:
             typer.echo(f"DRY-RUN: would insert into {rel(note)} before line {insert_line}:")
@@ -253,7 +272,7 @@ def main() -> None:
         app()
     except KbError as e:
         typer.echo(f"kb: {e}", err=True)
-        raise SystemExit(1)
+        raise SystemExit(1) from None
 
 
 if __name__ == "__main__":

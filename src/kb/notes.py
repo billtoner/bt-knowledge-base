@@ -5,6 +5,7 @@ A tool note (tool-notes/<tool>.md) holds curated shell examples grouped under
 command optionally followed by an inline "# intent" comment. find() searches
 those; list_categories() reads the doc/categories/*.md tier.
 """
+
 from __future__ import annotations
 
 import re
@@ -17,9 +18,7 @@ from .roots import Root
 _INDEXABLE_FENCES = {"", "bash", "sh", "shell", "zsh", "console"}
 
 # A category bullet:  - [display](../../tool-notes/slug.md) — description
-_BULLET_RE = re.compile(
-    r"^- \[(?P<display>[^\]]*)\]\((?P<target>[^)]*)\)(?:\s+—\s+(?P<desc>.*))?$"
-)
+_BULLET_RE = re.compile(r"^- \[(?P<display>[^\]]*)\]\((?P<target>[^)]*)\)(?:\s+—\s+(?P<desc>.*))?$")
 # Inline intent: first run of whitespace followed by '#'.
 _INTENT_RE = re.compile(r"[ \t]+#")
 
@@ -114,7 +113,7 @@ def iter_examples(text: str):
             continue
         m = _INTENT_RE.search(line)
         if m:
-            intent = line[m.start():].lstrip()
+            intent = line[m.start() :].lstrip()
             command = line[: m.start()].strip()
         else:
             intent = ""

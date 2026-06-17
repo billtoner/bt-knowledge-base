@@ -6,13 +6,31 @@
 # Run manually on every file (for an existing checkout):
 #   pre-commit run --all-files
 #
-# This is a docs / notes repo — no Python code, no tests. The only gate
-# that earns its keep is secret scanning, because tool notes and workflows
-# routinely describe credential formats (glpat-…, AKIA…, ghp_…) and it's
-# easy to paste a real one by accident.
+# Gates:
+#   - gitleaks: tool notes/workflows describe credential formats (glpat-…,
+#     AKIA…, ghp_…); this blocks commits that include a real one.
+#   - ruff: lint + format the kb CLI under src/ and tests/.
+#   - pytest: run the kb test suite.
 
 repos:
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1
     hooks:
       - id: gitleaks
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.17
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: python
+        additional_dependencies: [pytest, typer]
+        pass_filenames: false
+        always_run: true

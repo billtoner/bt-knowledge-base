@@ -1,6 +1,7 @@
 """Write-side: scaffold new tool notes, wire them into the category/index/README
 tiers, and insert ready-to-fill template lines into existing notes.
 """
+
 from __future__ import annotations
 
 import re
@@ -63,9 +64,7 @@ def insert_template(path: Path, insert_line: int, template: str = TEMPLATE) -> N
 # new notes: scaffold + wire category + index + README
 # ---------------------------------------------------------------------------
 def write_new_note(path: Path, tool: str, desc: str, template: str = TEMPLATE) -> None:
-    path.write_text(
-        f"# {tool}\n\n{desc}\n\n## Examples\n\n```bash\n{template}\n```\n"
-    )
+    path.write_text(f"# {tool}\n\n{desc}\n\n## Examples\n\n```bash\n{template}\n```\n")
 
 
 def add_category_bullet(cat_file: Path, category: str, tool: str, desc: str) -> bool:

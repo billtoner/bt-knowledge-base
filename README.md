@@ -17,7 +17,8 @@ pipx install ~/Documents/repos/bt-knowledge-base   # provides the `kb` command
 
 kb find <terms...>     # search every example by command, intent, or section;
                        # prints the snippet + a tool-notes/<x>.md:<line> pointer
-kb list [category]     # list categories and the tools under each (or just one)
+kb list [category]     # list categories and the tools under each (or just one);
+                       #   --categories / -c shows category names only
 kb cats                # list category names only (the high-level buckets)
 kb add  <tool>         # editor-first capture: opens the right note at a ready
                        # template line, scaffolding + wiring a new tool/category

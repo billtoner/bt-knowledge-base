@@ -7,6 +7,7 @@ Sources, in priority order:
 
 The FIRST root is the default write target ("public"); private notes need --private.
 """
+
 from __future__ import annotations
 
 import os
