@@ -11,3 +11,4 @@ Configuring interfaces, Wi-Fi, routing, firewalls, and VPN tunnels.
 - [nft](../../tool-notes/nft.md) — modern nftables CLI; sets, named tables, atomic loads, live monitoring
 - [ufw](../../tool-notes/ufw.md) — Ubuntu's friendly wrapper; named services, app profiles, rate-limit shortcut
 - [wg](../../tool-notes/wg.md) — WireGuard control plane (`wg` + `wg-quick`); keys, bring-up, peer management, live reload
+- [tailscale](../../tool-notes/tailscale.md) — WireGuard mesh VPN; MagicDNS, ACLs, exit nodes

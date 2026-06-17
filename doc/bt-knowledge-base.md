@@ -41,7 +41,7 @@ tool() {
 - [Cloud CLIs](categories/cloud-clis.md)
 - [Containers & Orchestration](categories/containers-orchestration.md)
 - [Databases](categories/databases.md)
-- Disk
+- [Disk](categories/disk.md)
 - [Files & Directories](categories/files-directories.md)
 - [Hardware & Devices](categories/hardware-devices.md)
 - [HTTP & API Clients](categories/http-api-clients.md)

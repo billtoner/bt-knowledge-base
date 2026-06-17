@@ -26,8 +26,10 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [curl](curl.md) — HTTP(S) client; headers, methods, multipart, debug tracing
 - [db-browser-for-sqlite](db-browser-for-sqlite.md) — GUI for inspecting and editing SQLite databases
 - [delta](delta.md) — syntax-highlighted, side-by-side git diff viewer
+- [df](df.md) — filesystem free space (df) and per-directory usage (du)
 - [dmesg](dmesg.md) — kernel ring buffer; boot, hardware, OOM, driver messages
 - [docker](docker.md) — build, run, and manage containers and images (+ compose)
+- [doggo](doggo.md) — modern colorized dig; JSON, DoH/DoT, multi-resolver
 - [eza](eza.md) — modern `ls` replacement with git status, icons, tree mode
 - [fd](fd.md) — `find` replacement; smart-case, gitignore-aware, parallel exec
 - [gcloud](gcloud.md) — Google Cloud CLI; auth, config, and GCP resources
@@ -52,14 +54,17 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [just](just.md) — modern command runner; like make, but for tasks
 - [kubectl](kubectl.md) — Kubernetes control-plane CLI: query and manage cluster resources
 - [lazygit](lazygit.md) — full-screen TUI for git operations
+- [lsblk](lsblk.md) — block devices, partitions, mounts, sizes as a tree
 - [lsof](lsof.md) — list open files: ports, sockets, locked mounts, deleted-but-open files
 - [lsusb](lsusb.md) — list USB devices and their topology
 - [make](make.md) — the ubiquitous build/task runner; targets, prereqs, parallelism
+- [ncdu](ncdu.md) — interactive 'what's eating my disk'; navigable du (dust alt)
 - [nmcli](nmcli.md) — NetworkManager CLI; persistent profiles for Wi-Fi, Ethernet, VPN
 - [nosql-workbench](nosql-workbench.md) — AWS GUI for DynamoDB schema design and querying
 - [openssl](openssl.md) — TLS/crypto swiss army knife; certs, keys, CSRs, server debug
 - [packer](packer.md) — build identical machine/container images from one config
 - [pactl](pactl.md) — PulseAudio/PipeWire control utility
+- [parted](parted.md) — partition disks (parted scriptable, fdisk interactive)
 - [pass](pass.md) — Unix password store; gpg-encrypted files in a git repo
 - [perf](perf.md) — CPU counters, sampling profiles, flame-graph output
 - [pgrep](pgrep.md) — find and signal processes by name/attributes (pgrep, pkill)
@@ -77,9 +82,11 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [sqlite3](sqlite3.md) — official SQLite CLI; schema, queries, pragmas
 - [ssh](ssh.md) — secure shell; remote exec, port forwarding, jump hosts
 - [ssh-add](ssh-add.md) — manage keys in the ssh-agent; macOS Keychain integration
+- [ssh-keygen](ssh-keygen.md) — create/convert/inspect SSH keys; fingerprints, host keys
 - [strace](strace.md) — trace syscalls and signals; first 'what is it doing' stop
 - [systemctl](systemctl.md) — control systemd services and units
 - [systemd-analyze](systemd-analyze.md) — boot timing and unit verification for systemd
+- [tailscale](tailscale.md) — WireGuard mesh VPN; MagicDNS, ACLs, exit nodes
 - [tar](tar.md) — create/extract archives; the flags you always re-look-up
 - [terraform](terraform.md) — provision infrastructure as code; plan, apply, state, workspaces
 - [terragrunt](terragrunt.md) — keep Terraform DRY across envs; remote state, module wiring

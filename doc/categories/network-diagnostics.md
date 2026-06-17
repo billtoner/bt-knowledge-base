@@ -15,3 +15,4 @@ Probing DNS, ports, routes, packets, and bandwidth when the network misbehaves.
 - [iftop](../../tool-notes/iftop.md) — top by network flow (host pairs)
 - [nethogs](../../tool-notes/nethogs.md) — top by process bandwidth
 - [nc](../../tool-notes/nc.md) — TCP/UDP swiss army knife; port probe, banner grab, ad-hoc listener, throwaway HTTP responder
+- [doggo](../../tool-notes/doggo.md) — modern colorized dig; JSON, DoH/DoT, multi-resolver
