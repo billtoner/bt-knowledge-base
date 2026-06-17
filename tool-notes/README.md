@@ -13,17 +13,24 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [aiomonitor](aiomonitor.md) — telnet console into a running asyncio loop
 - [ansible](ansible.md) — configuration management and automation playbooks
 - [atuin](atuin.md) — TUI fuzzy-search shell history backed by SQLite
+- [aws](aws.md) — AWS CLI v2 — profiles, SSO, and every service API
+- [az](az.md) — Azure CLI — auth, subscriptions, and Azure resources
 - [bat](bat.md) — `cat` with syntax highlighting, line numbers, and git status
 - [bluetoothctl](bluetoothctl.md) — interactive BlueZ Bluetooth control utility
+- [bq](bq.md) — BigQuery CLI — query, load, extract, manage datasets
 - [curl](curl.md) — HTTP(S) client; headers, methods, multipart, debug tracing
 - [db-browser-for-sqlite](db-browser-for-sqlite.md) — GUI for inspecting and editing SQLite databases
 - [delta](delta.md) — syntax-highlighted, side-by-side git diff viewer
+- [docker](docker.md) — build, run, and manage containers and images (+ compose)
 - [eza](eza.md) — modern `ls` replacement with git status, icons, tree mode
 - [fd](fd.md) — `find` replacement; smart-case, gitignore-aware, parallel exec
+- [gcloud](gcloud.md) — Google Cloud CLI — auth, config, and GCP resources
 - [git](git.md) — version control fundamentals
 - [grip](grip.md) — render local markdown via GitHub's API and serve on localhost
 - [gron](gron.md) — flatten JSON into greppable assignments; reversible
+- [gsutil](gsutil.md) — Google Cloud Storage from the CLI (gsutil + gcloud storage)
 - [hcitool](hcitool.md) — lower-level Bluetooth utility (HCI commands, RSSI scans)
+- [helm](helm.md) — Kubernetes package manager — install/template/rollback releases
 - [httpie](httpie.md) — friendly HTTP client; JSON by default, colorized output
 - [ifconfig](ifconfig.md) — configure/inspect network interfaces (deprecated for `ip`)
 - [iwconfig](iwconfig.md) — configure/inspect wireless interfaces (deprecated for `iw`)
