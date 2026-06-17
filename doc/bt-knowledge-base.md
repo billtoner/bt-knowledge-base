@@ -39,7 +39,7 @@ tool() {
 - Archiving
 - Build & Packaging
 - [Cloud CLIs](categories/cloud-clis.md)
-- Containers & Orchestration
+- [Containers & Orchestration](categories/containers-orchestration.md)
 - [Databases](categories/databases.md)
 - Disk
 - [Files & Directories](categories/files-directories.md)

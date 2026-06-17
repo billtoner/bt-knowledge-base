@@ -30,6 +30,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [jc](jc.md) — convert standard Unix command output to JSON for jq pipelines
 - [journalctl](journalctl.md) — read and filter the systemd journal
 - [jq](jq.md) — command-line JSON processor
+- [kubectl](kubectl.md) — Kubernetes control-plane CLI: query and manage cluster resources
 - [lazygit](lazygit.md) — full-screen TUI for git operations
 - [lsof](lsof.md) — list open files: ports, sockets, locked mounts, deleted-but-open files
 - [lsusb](lsusb.md) — list USB devices and their topology
