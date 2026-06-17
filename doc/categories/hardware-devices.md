@@ -6,3 +6,6 @@ Inspecting and controlling USB, Bluetooth, and audio devices.
 - [bluetoothctl](../../tool-notes/bluetoothctl.md) — interactive and scripted control of BlueZ; pair, advertise, manage controllers
 - [hcitool](../../tool-notes/hcitool.md) — low-level HCI commands (deprecated; useful for RSSI, BLE scans on older stacks)
 - [pactl](../../tool-notes/pactl.md) — control PulseAudio / PipeWire-pulse; sinks, sources, volume, card profiles, module loading
+- [lspci](../../tool-notes/lspci.md) — list PCI devices; drivers, IDs, topology
+- [lscpu](../../tool-notes/lscpu.md) — CPU architecture, topology, caches, flags
+- [sensors](../../tool-notes/sensors.md) — hardware temps, fans, voltages (lm-sensors)
