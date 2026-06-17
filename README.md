@@ -22,6 +22,8 @@ kb list [category]     # list categories and the tools under each (or just one);
 kb cats                # list category names only (the high-level buckets)
 kb add  <tool>         # editor-first capture: opens the right note at a ready
                        # template line, scaffolding + wiring a new tool/category
+kb move <tool> <cat>   # recategorize a tool (updates category files + index,
+                       # removing a category that becomes empty)
 kb open <tool>         # open a note in $EDITOR
 kb --help              # full usage + per-subcommand help
 ```

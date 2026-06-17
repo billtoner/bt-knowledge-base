@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from .notes import _INDEXABLE_FENCES, _strip_fence
+from .notes import _BULLET_RE, _INDEXABLE_FENCES, _strip_fence
 from .roots import Root
 
 TEMPLATE = "command-here            # what it does / why you kept it"
@@ -15,6 +15,11 @@ TEMPLATE = "command-here            # what it does / why you kept it"
 
 class KbError(Exception):
     """User-facing error; cli turns it into a styled message + exit 1."""
+
+
+def _bullet(display: str, slug: str, desc: str) -> str:
+    base = f"- [{display}](../../tool-notes/{slug}.md)"
+    return f"{base} — {desc}" if desc else base
 
 
 def kebab(s: str) -> str:
@@ -67,10 +72,12 @@ def write_new_note(path: Path, tool: str, desc: str, template: str = TEMPLATE) -
     path.write_text(f"# {tool}\n\n{desc}\n\n## Examples\n\n```bash\n{template}\n```\n")
 
 
-def add_category_bullet(cat_file: Path, category: str, tool: str, desc: str) -> bool:
+def add_category_bullet(
+    cat_file: Path, category: str, tool: str, desc: str, display: str | None = None
+) -> bool:
     """Append the tool bullet to its category file. Returns True if the category
     file was newly created (so the caller knows to wire the index)."""
-    bullet = f"- [{tool}](../../tool-notes/{tool}.md) — {desc}"
+    bullet = _bullet(display or tool, tool, desc)
     if cat_file.exists():
         text = cat_file.read_text()
         if not text.endswith("\n"):
@@ -79,6 +86,26 @@ def add_category_bullet(cat_file: Path, category: str, tool: str, desc: str) -> 
         return False
     cat_file.write_text(f"# {category}\n\n{category} tools.\n\n{bullet}\n")
     return True
+
+
+def remove_category_bullet(cat_file: Path, tool: str) -> bool:
+    """Remove the bullet referencing <tool> from a category file. Returns True if
+    no tool bullets remain afterward (the category is now empty)."""
+    out: list[str] = []
+    for line in cat_file.read_text().splitlines():
+        m = _BULLET_RE.match(line)
+        if m and Path(m.group("target")).stem == tool:
+            continue
+        out.append(line)
+    cat_file.write_text("\n".join(out).rstrip("\n") + "\n")
+    return not any(_BULLET_RE.match(line) for line in out)
+
+
+def unwire_index_category(index: Path, slug: str) -> None:
+    """Remove a category's link line from the index (used when it's emptied)."""
+    needle = f"(categories/{slug}.md)"
+    out = [line for line in index.read_text().splitlines() if needle not in line]
+    index.write_text("\n".join(out) + "\n")
 
 
 def wire_index_category(index: Path, name: str, slug: str) -> None:

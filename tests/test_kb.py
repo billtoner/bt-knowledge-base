@@ -143,6 +143,62 @@ def test_list_categories_flag_matches_cats(repo: Root, monkeypatch):
     assert runner.invoke(app, ["list", "-c"]).output == flag.output
 
 
+def test_move_to_new_category_empties_old(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["move", "ssh", "Remote Access"])
+    assert r.exit_code == 0
+    new = repo.categories_dir / "remote-access.md"
+    assert new.exists()
+    assert "- [ssh](../../tool-notes/ssh.md) — secure shell" in new.read_text()
+    # Network had only ssh, so it's emptied and removed, and unlinked from the index.
+    assert not (repo.categories_dir / "network.md").exists()
+    index = repo.index.read_text()
+    assert "network.md" not in index
+    assert "remote-access.md" in index
+
+
+def test_move_keeps_nonempty_source(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    # A source category with two tools; moving one leaves the other behind.
+    (repo.notes_dir / "scp.md").write_text("# scp\n\ncopy.\n")
+    (repo.notes_dir / "rsync.md").write_text("# rsync\n\nsync.\n")
+    (repo.categories_dir / "transfer.md").write_text(
+        "# Transfer\n\nTransfer tools.\n\n"
+        "- [scp](../../tool-notes/scp.md) — copy\n"
+        "- [rsync](../../tool-notes/rsync.md) — sync\n"
+    )
+    r = runner.invoke(app, ["move", "scp", "Network"])
+    assert r.exit_code == 0
+    transfer = repo.categories_dir / "transfer.md"
+    assert transfer.exists()  # not emptied
+    assert "rsync" in transfer.read_text()
+    assert "scp" not in transfer.read_text()
+    assert "scp" in (repo.categories_dir / "network.md").read_text()
+
+
+def test_move_already_there(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["move", "ssh", "Network"])
+    assert r.exit_code == 0
+    assert "already in" in r.output
+
+
+def test_move_unknown_tool(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["move", "nope", "Network"])
+    assert r.exit_code == 1
+
+
+def test_move_dry_run_writes_nothing(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    before = (repo.categories_dir / "network.md").read_text()
+    r = runner.invoke(app, ["move", "ssh", "Remote Access", "--dry-run"])
+    assert r.exit_code == 0
+    assert "DRY-RUN" in r.output
+    assert (repo.categories_dir / "network.md").read_text() == before
+    assert not (repo.categories_dir / "remote-access.md").exists()
+
+
 def test_root_for():
     pub = Root("pub", Path("/tmp/pub"))
     priv = Root("private", Path("/tmp/private"))

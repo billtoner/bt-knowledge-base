@@ -76,6 +76,15 @@ def list_categories(root: Root) -> list[Category]:
     return [parse_category(p) for p in sorted(cat_dir.glob("*.md"))]
 
 
+def find_tool_category(root: Root, tool: str) -> tuple[Category, ToolRef] | None:
+    """The category (and its bullet) currently referencing <tool>, if any."""
+    for c in list_categories(root):
+        for t in c.tools:
+            if t.slug == tool:
+                return c, t
+    return None
+
+
 def orphan_tools(root: Root, categories: list[Category]) -> list[str]:
     """Tool notes that exist but aren't referenced by any category file."""
     referenced = {t.slug for c in categories for t in c.tools}

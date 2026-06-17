@@ -32,6 +32,7 @@ _ALIASES = {
     "c": "cats",
     "categories": "cats",
     "o": "open",
+    "mv": "move",
 }
 
 
@@ -265,6 +266,62 @@ def add(
     typer.echo(f"  {rel(note)}")
     typer.echo(f"  {rel(cat_file)}")
     open_at(note, 8)
+
+
+@app.command()
+def move(
+    tool: str = typer.Argument(..., help="tool note to move"),
+    category: str = typer.Argument(..., help="destination category"),
+    private: bool = typer.Option(False, "--private", help="operate on the private root"),
+    repo: str = typer.Option("", "--repo", help="operate on the root with this label"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
+) -> None:
+    """Move a tool from its current category to another (wiring/unwiring the index)."""
+    roots = _roots()
+    sel = "private" if private else repo
+    rt = root_for(roots, sel)
+    if rt is None:
+        labels = ", ".join(r.label for r in roots)
+        _die(f"no {sel or 'default'} repo configured (roots: {labels})")
+
+    hit = notes.find_tool_category(rt, tool)
+    if hit is None:
+        _die(f"{tool} isn't in any category in the {rt.label} repo (try: kb find {tool})")
+    old_cat, ref = hit
+    target_slug = capture.kebab(category)
+
+    def rel(p) -> str:
+        return str(Path(p).relative_to(rt.path))
+
+    if old_cat.slug == target_slug:
+        typer.echo(f"{tool} is already in {old_cat.name}.")
+        return
+
+    new_cat_file = rt.categories_dir / f"{target_slug}.md"
+    empties = all(t.slug == tool for t in old_cat.tools)
+
+    if dry_run:
+        typer.echo(f"DRY-RUN: move {tool}: {old_cat.name} → {category}")
+        if new_cat_file.exists():
+            typer.echo(f"  append bullet to {rel(new_cat_file)}")
+        else:
+            typer.echo(f"  create {rel(new_cat_file)} + link it in {rel(rt.index)}")
+        typer.echo(f"  remove bullet from {rel(old_cat.file)}")
+        if empties:
+            typer.echo(f"  {old_cat.name} becomes empty → delete it and unlink from index")
+        return
+
+    created = capture.add_category_bullet(
+        new_cat_file, category, tool, ref.desc, display=ref.display
+    )
+    if created:
+        capture.wire_index_category(rt.index, category, target_slug)
+    if capture.remove_category_bullet(old_cat.file, tool):
+        old_cat.file.unlink()
+        capture.unwire_index_category(rt.index, old_cat.slug)
+        typer.echo(f"Moved {tool}: {old_cat.name} → {category} (removed empty {old_cat.name}).")
+    else:
+        typer.echo(f"Moved {tool}: {old_cat.name} → {category}.")
 
 
 def main() -> None:
