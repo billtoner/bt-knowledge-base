@@ -10,8 +10,9 @@
 #                                tool-notes/<x>.md:<line> pointer you can click/open.
 #   kb add  <tool> [opts]        Editor-first capture. Opens the right note at a ready
 #                                template line; scaffolds + wires a new tool/category.
-#   kb list                      List existing categories and the tools under each
-#                                (across all roots); flags any unwired tool notes.
+#   kb list [category]           List categories and the tools under each (across all
+#                                roots); pass a category to show just that one.
+#   kb cats                      List category names only (the high-level buckets).
 #   kb open <tool>               Open a tool note in $EDITOR.
 #   kb help                      This text.
 #
@@ -397,15 +398,23 @@ add_readme_bullet() {
 }
 
 kb_list() {
+    # kb list [category]  — full tree, or just one category's tools when filtered.
+    local filter=""; (( $# )) && filter=$(kebab "$*")
     kb_load_roots
     local multi=0; (( ${#KB_PATHS} > 1 )) && multi=1
-    local i root label cf name line tool desc n
+    local i root label cf name line tool desc n matched=0 cats
     for i in {1..${#KB_PATHS}}; do
         label="${KB_LABELS[$i]}"; root="${KB_PATHS[$i]}"
-        local cats=("$root"/doc/categories/*.md(N))
+        if [[ -n "$filter" ]]; then
+            cats=("$root"/doc/categories/$filter.md(N))
+            (( ${#cats} )) || continue          # this root lacks the category; skip it
+        else
+            cats=("$root"/doc/categories/*.md(N))
+        fi
         (( multi )) && print -r -- "${C_PATH}[$label]${C_RST}"
         typeset -A seen; seen=()
         for cf in "${cats[@]}"; do
+            matched=1
             name=$(awk '/^# /{ sub(/^# /,""); print; exit }' "$cf")
             [[ -n "$name" ]] || name="${cf:t:r}"
             print -r -- "${C_CMD}${name}${C_RST}"
@@ -421,7 +430,8 @@ kb_list() {
                 fi
             done < "$cf"
         done
-        # tool notes that exist but aren't referenced by any category file
+        # Orphan + empty-root notes only make sense in the full (unfiltered) listing.
+        [[ -n "$filter" ]] && continue
         local orphans=()
         for n in "$root"/tool-notes/*.md(N); do
             [[ "${n:t}" == "README.md" ]] && continue
@@ -432,6 +442,28 @@ kb_list() {
             for n in "${orphans[@]}"; do print -r -- "  ${n}"; done
         fi
         (( ${#cats} || ${#orphans} )) || print -r -- "  ${C_INT}(no tools yet)${C_RST}"
+    done
+    [[ -n "$filter" ]] && (( ! matched )) && die "no category matching \"$*\" (try: kb cats)"
+    return 0
+}
+
+kb_cats() {
+    # Category names only — the high-level buckets, no tools.
+    kb_load_roots
+    local multi=0; (( ${#KB_PATHS} > 1 )) && multi=1
+    local i root label cf name
+    for i in {1..${#KB_PATHS}}; do
+        label="${KB_LABELS[$i]}"; root="${KB_PATHS[$i]}"
+        local cats=("$root"/doc/categories/*.md(N))
+        (( multi )) && print -r -- "${C_PATH}[$label]${C_RST}"
+        if (( ! ${#cats} )); then
+            print -r -- "  ${C_INT}(no categories yet)${C_RST}"; continue
+        fi
+        for cf in "${cats[@]}"; do
+            name=$(awk '/^# /{ sub(/^# /,""); print; exit }' "$cf")
+            [[ -n "$name" ]] || name="${cf:t:r}"
+            print -r -- "$name"
+        done
     done
 }
 
@@ -454,8 +486,9 @@ usage:
   kb find <terms...>            Search examples across all roots; prints command + intent
                                 + a tool-notes/<x>.md:<line> pointer (tagged by repo).
   kb add  <tool> [opts]         Editor-first capture; scaffolds + wires a new tool/category.
-  kb list                       List existing categories and the tools under each
-                                (across all roots); flags any unwired tool notes.
+  kb list [category]            List categories and the tools under each (across all
+                                roots); pass a category name to show just that one.
+  kb cats                       List category names only (the high-level buckets).
   kb open <tool>                Open a tool note in \$EDITOR (searches all roots).
   kb help                       This text.
 
@@ -480,6 +513,7 @@ case "${1:-help}" in
     find|f|get)  shift; kb_find "$@" ;;
     add|put|a)   shift; kb_add "$@" ;;
     list|ls|l)   shift; kb_list "$@" ;;
+    cats|categories|c) shift; kb_cats "$@" ;;
     open|o)      shift; kb_open "$@" ;;
     help|-h|--help) kb_help ;;
     *)           die "unknown subcommand: $1 (try: kb help)" ;;
