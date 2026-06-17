@@ -34,6 +34,7 @@ _ALIASES = {
     "o": "open",
     "mv": "move",
     "sec": "sections",
+    "cat": "show",
 }
 
 
@@ -66,6 +67,7 @@ def _root() -> None:
     - `kb add <tool> --section "<H>"` — append under an existing section
     - `kb add <tool> --new-section "<H>"` — create a section, then capture
     - `kb move <tool> <category>` — recategorize a tool
+    - `kb show <tool>` — print a note to the terminal (no editor)
     - `kb open <tool>` — open a note in $EDITOR
     """
 
@@ -240,6 +242,17 @@ def open_cmd(tool: str = typer.Argument(..., help="tool note to open")) -> None:
         note = root.notes_dir / f"{tool}.md"
         if note.is_file():
             open_at(note, 1)
+            return
+    _die(f"no tool note: {tool} (try: kb find {tool})")
+
+
+@app.command()
+def show(tool: str = typer.Argument(..., help="tool note to print")) -> None:
+    """Print a tool note to the terminal — like `open`, but no editor."""
+    for root in _roots():
+        note = root.notes_dir / f"{tool}.md"
+        if note.is_file():
+            typer.echo(note.read_text(), nl=False)
             return
     _die(f"no tool note: {tool} (try: kb find {tool})")
 

@@ -27,6 +27,7 @@ kb add <tool> ...      # editor-first capture (scaffolds + wires a new tool/cate
                        #   --new-section "H"  create a section, then capture
 kb move <tool> <cat>   # recategorize a tool (updates category files + index,
                        # removing a category that becomes empty)
+kb show <tool>         # print a note to the terminal (no editor; alias: cat)
 kb open <tool>         # open a note in $EDITOR
 kb --help              # common tasks + per-subcommand help
 ```

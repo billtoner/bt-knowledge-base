@@ -247,6 +247,20 @@ def test_cats_verbose_shows_counts(repo: Root, monkeypatch):
     assert "Network  (1)" in r.output
 
 
+def test_show_command(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["show", "ssh"])
+    assert r.exit_code == 0
+    assert "# ssh" in r.output
+    assert "## Forwarding" in r.output
+
+
+def test_show_unknown_tool(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["show", "nope"])
+    assert r.exit_code == 1
+
+
 def test_root_for():
     pub = Root("pub", Path("/tmp/pub"))
     priv = Root("private", Path("/tmp/private"))
