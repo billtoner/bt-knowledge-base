@@ -72,12 +72,25 @@ Ctrl-R Ctrl-R Ctrl-R Ctrl-R   # cycle to [Directory] mode
 atuin stats    # what do you actually run all day?
 ```
 
-## Sync (defer)
+## Sync
+
+Set up on the default server `https://api.atuin.sh` (end-to-end encrypted — the server stores only ciphertext). Auto-syncs every 5m; `auto_sync = true` is the default.
 
 ```bash
-atuin register -u <username> -e <email>
-atuin login -u <username>
-atuin sync
+atuin register -u <username> -e <email> -p <password>   # first machine only; auto-logs-in
+atuin sync                                               # push/pull now (usually automatic)
+atuin status                                             # who am I, which server, last sync
 ```
 
-Defer until you actually want cross-machine history. Considerations: trust an external server with your shell history, or self-host.
+`atuin key` prints the encryption key — run it in a **plain terminal**, never a logged/shared session, and stash it (+ the password) in the "Atuin Sync" entry in Apple Passwords (iCloud), with the key in the entry's Notes field.
+
+## Restore on a new Mac
+
+The password gets you into the account; the **key decrypts the history**. Both are required:
+
+```bash
+atuin login -u <username> -p <password> -k '<encryption-key>'   # -k is MANDATORY
+atuin sync                                                       # pulls history down
+```
+
+Lose the key and the synced history is undecryptable ciphertext — atuin can't recover it. Creds + key live in Apple Passwords / iCloud ("Atuin Sync", key in Notes); also referenced in `~/dotfiles/MAC-BOOTSTRAP.md`.
