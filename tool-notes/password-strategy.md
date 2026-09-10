@@ -12,6 +12,15 @@ Personal password strategy for Apple Passwords (iCloud). Goal: easy for me, hard
 - **AutoFill will be there** (normal sites/apps) → **generated random**. ~95% of accounts. Never typed, so unmemorable is fine.
 - **You'll sometimes type it by hand** (smart TV, game console, someone else's computer, Apple ID on a fresh device) → **passphrase** (random words): strong *and* typeable.
 
+### Satisfying composition rules (upper/number/special)
+
+- **Tier 1 — let the generator do it.** Apple's suggestion (`hupvEw-2kimyb-Zt9dfp`) already has upper+lower+number+hyphen, satisfying nearly all sites. Picky site (bans hyphen / needs a symbol) → tap suggestion → **"Other Options"** or hand-edit, then **save whatever the site accepted**. Never typed, so ugliness doesn't matter.
+- **Tier 0 — passphrase + a memorable "compliance tail":** 3-4 words, Capitalize each first letter (upper+lower), append a digit + safe symbol. E.g. `Harbor-Mango-Quilt-9!`, `Copper-Lantern-Otter-4$`. Meets upper/lower/number/special/length everywhere. Safe symbols: `! # $` and `-`; avoid `@` space quote `%` `^` (often rejected). Keep the 4 word-sets distinct; a shared tail like `-9!` is fine (entropy is in the words).
+
+### Why NOT a shared-base pattern (`Base-amzn`, `Base-goog`…)
+
+Better than reuse, but **derivable**: one site breach/phish exposes `Base-amzn` → attacker computes every other site. That re-creates the cascade you're avoiding. And it's moot — the manager remembers Tier 1 for you, so a pattern solves a problem you no longer have. Random for Tier 1; independent passphrases for Tier 0.
+
 ## Duplicate / reuse cleanup — by priority, not volume
 
 Two separate problems:
