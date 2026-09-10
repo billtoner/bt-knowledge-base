@@ -7,3 +7,4 @@ Security & Secrets tools.
 - [vault](../../tool-notes/vault.md) — HashiCorp Vault; auth, KV secrets, dynamic creds, transit
 - [pass](../../tool-notes/pass.md) — Unix password store; gpg-encrypted files in a git repo
 - [gitleaks](../../tool-notes/gitleaks.md) — scan repos/files for committed secrets (this repo's hook)
+- [password-strategy](../../tool-notes/password-strategy.md) — Apple Passwords strategy: tiers, when to use generated vs passphrase, dedup priority, spousal/estate access
