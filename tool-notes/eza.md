@@ -22,7 +22,7 @@ Modern `ls` replacement. Maintained fork of the (defunct) `exa`.
 ```bash
 eza -lah --git audiopulse/                       # what changed in audiopulse/ since last commit
 eza --tree --git-ignore audiopulse/calibration   # walk a module visually
-eza -lah --git --sort=newest                     # newest-first listing
+eza -lah --git --sort=oldest                     # newest-first listing (see the sort gotcha below)
 eza -lF                                           # quick ls with dir/exec markers
 ```
 
@@ -85,11 +85,13 @@ fd -t d | fzf --preview 'eza -la --git --color=always {}'  # peek a directory as
 |---|---|
 | `ls -la` | `eza -lah` |
 | `ls -F` | `eza -F` (or `--classify`) |
-| `ls -ltr` | `eza -l --sort=oldest` |
-| `ls -lt` | `eza -l --sort=newest` |
+| `ls -ltr` (oldest first) | `eza -l --sort=newest` |
+| `ls -lt` (newest first) | `eza -l --sort=oldest` |
 | `tree` | `eza --tree` |
 
-**Watch out**: `eza -t` is NOT "sort by time" (that conflicts with `--time=field`). Use `--sort=newest|oldest` instead. GNU muscle-memory pasting `-ltrp` will fail with "Option --time has no 'rp' setting" — that's the classic gotcha.
+**Watch out — eza's time-sort names are inverted.** `--sort=newest` lists **oldest first** (newest at the bottom, by your prompt — the `ls -ltr` order); `--sort=oldest` lists **newest first** (the `ls -lt` order). Equivalents that read the "right" way round: `--sort=modified` = oldest-first, `--sort=modified --reverse` = newest-first. Verified on eza 0.x — check with a quick `eza -l --sort=... | head -1` if in doubt.
+
+Also: `eza -t` is NOT "sort by time" (that conflicts with `--time=field`), and GNU muscle-memory pasting `-ltrp` fails with "Option --time has no 'rp' setting" — the classic gotcha.
 
 ## Killer flags
 
@@ -97,5 +99,5 @@ fd -t d | fzf --preview 'eza -la --git --color=always {}'  # peek a directory as
 - `--tree --level N` — tree view, depth-limited
 - `-F` / `--classify` — type markers (`/` for dirs)
 - `--icons` — file-type icons (needs Nerd Font)
-- `--sort=newest|oldest|size|name` — explicit sort
+- `--sort=modified|size|name|extension` — explicit sort (prefer `modified [--reverse]` over the inverted `newest`/`oldest`)
 - `--group-directories-first` — dirs at top
