@@ -37,6 +37,8 @@ _ALIASES = {
     "cat": "show",
     "t": "tag",
     "tg": "tags",
+    "rm": "delete",
+    "del": "delete",
 }
 
 
@@ -60,20 +62,21 @@ def _root() -> None:
 
     **Common tasks**
 
-    - `kb find <terms>` — search every example (command, intent, or section)
+    - `kb find <terms>` — search every note: shell examples AND prose body
     - `kb list [category]` — categories and the tools under each
     - `kb list -c` / `kb cats` — category names only
     - `kb list -v` — tools with each one's sections
     - `kb tags` — the tag vocabulary (cross-cutting; `-v` for counts)
     - `kb tag <tag...>` — tools carrying a tag (all tags = intersection)
     - `kb sections <tool>` — a tool's section headings
-    - `kb add <tool> --category <C>` — new tool (category created if new)
-    - `kb add <tool> --category <C> --tags "a,b"` — new tool with tags
+    - `kb add <tool> --category <C>` — new note (category optional)
+    - `kb add <name> --prose` — new plain prose note (no bash block)
     - `kb add <tool> --section "<H>"` — append under an existing section
     - `kb add <tool> --new-section "<H>"` — create a section, then capture
-    - `kb move <tool> <category>` — recategorize a tool
+    - `kb move <tool> <category>` — (re)categorize a note
+    - `kb delete <name>` — delete a note and unwire it (alias: rm)
     - `kb show <tool>` — print a note to the terminal (no editor)
-    - `kb open <tool>` — open a note in $EDITOR
+    - `kb open <tool>` — open a note in $EDITOR (this is how you *edit*)
     """
 
 
@@ -141,7 +144,11 @@ def _emit_categories(roots: list[Root], verbose: bool = False) -> None:
 # ---------------------------------------------------------------------------
 @app.command()
 def find(terms: list[str] = typer.Argument(..., help="search terms")) -> None:
-    """Search examples across all roots; prints command + intent + a file:line pointer."""
+    """Search every note across all roots — shell examples and prose body alike.
+
+    All terms must match (in the command, its intent, the section, or the prose).
+    Command matches rank above prose; prints the line + a file:line pointer.
+    """
     roots = _roots()
     results = notes.find(roots, terms)
     if not results:
@@ -149,7 +156,8 @@ def find(terms: list[str] = typer.Argument(..., help="search terms")) -> None:
         raise typer.Exit(1)
     show_label = len(roots) > 1
     for e in results:
-        head = f"{CMD}{e.command}{RST}"
+        # Shell examples print bold; prose body prints plain so it reads naturally.
+        head = f"{CMD}{e.command}{RST}" if e.kind == "cmd" else e.command
         if e.intent:
             head += f"   {INT}{e.intent}{RST}"
         typer.echo(head)
@@ -316,9 +324,10 @@ def add(
     tool: str = typer.Argument(..., help="tool note to capture into"),
     section: str = typer.Option("", "--section", help="existing section to capture under"),
     new_section: str = typer.Option("", "--new-section", help="create this section, then capture"),
-    category: str = typer.Option("", "--category", help="category for a NEW tool"),
-    desc: str = typer.Option("", "--desc", help="description for a NEW tool's title"),
-    tags: str = typer.Option("", "--tags", help="comma-separated tags for a NEW tool"),
+    category: str = typer.Option("", "--category", help="category for a NEW note (optional)"),
+    desc: str = typer.Option("", "--desc", help="description for a NEW note's title"),
+    tags: str = typer.Option("", "--tags", help="comma-separated tags for a NEW note"),
+    prose: bool = typer.Option(False, "--prose", help="scaffold a plain prose note (no bash)"),
     private: bool = typer.Option(False, "--private", help="write to the private root"),
     repo: str = typer.Option("", "--repo", help="write to the root with this label"),
     dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
@@ -371,21 +380,19 @@ def add(
         open_at(note, insert_line)
         return
 
-    # New note: scaffold + wire category + README + index.
+    # New note: scaffold, then wire README + (optionally) category + index.
     if new_section:
         _die(f"{tool} doesn't exist yet — create it with --category first")
-    if not category:
-        category = typer.prompt(f"Category for new tool '{tool}' (e.g. Network)")
-    if not category:
-        _die("a category is required for a new tool")
     desc = desc or "<one-line description — what it does / what it replaces>"
-    cat_slug = capture.kebab(category)
-    cat_file = rt.categories_dir / f"{cat_slug}.md"
+    cat_slug = capture.kebab(category) if category else ""
+    cat_file = rt.categories_dir / f"{cat_slug}.md" if category else None
 
     if dry_run:
-        typer.echo(f"DRY-RUN plan for new tool '{tool}':")
-        typer.echo(f"  create  {rel(note)}")
-        if cat_file.exists():
+        typer.echo(f"DRY-RUN plan for new note '{tool}':")
+        typer.echo(f"  create  {rel(note)}" + ("  (prose)" if prose else ""))
+        if cat_file is None:
+            typer.echo("  leave uncategorized (file later with: kb move)")
+        elif cat_file.exists():
             typer.echo(f"  append bullet to {rel(cat_file)}")
         else:
             typer.echo(f"  create  {rel(cat_file)} (H1: {category}) + link it in {rel(rt.index)}")
@@ -393,16 +400,21 @@ def add(
         return
 
     tag_list = [t for t in tags.replace(",", " ").split() if t]
-    capture.write_new_note(note, tool, desc, tags=tag_list)
-    created = capture.add_category_bullet(cat_file, category, tool, desc)
-    if created:
-        capture.wire_index_category(rt.index, category, cat_slug)
-        typer.echo(f"  linked category in {rel(rt.index)}")
+    land = capture.write_new_note(note, tool, desc, tags=tag_list, prose=prose)
     capture.add_readme_bullet(rt, tool, desc)
-    typer.echo(f"Scaffolded new tool '{tool}' in category '{category}'.")
+    if cat_file is not None:
+        created = capture.add_category_bullet(cat_file, category, tool, desc)
+        if created:
+            capture.wire_index_category(rt.index, category, cat_slug)
+            typer.echo(f"  linked category in {rel(rt.index)}")
+        typer.echo(f"Scaffolded new note '{tool}' in category '{category}'.")
+        typer.echo(f"  {rel(cat_file)}")
+    else:
+        typer.echo(
+            f"Scaffolded '{tool}' (uncategorized — file it later with: kb move {tool} <cat>)."
+        )
     typer.echo(f"  {rel(note)}")
-    typer.echo(f"  {rel(cat_file)}")
-    open_at(note, 10 if tag_list else 8)  # land on the template line (tags shift it down)
+    open_at(note, land)
 
 
 @app.command()
@@ -459,6 +471,62 @@ def move(
         typer.echo(f"Moved {tool}: {old_cat.name} → {category} (removed empty {old_cat.name}).")
     else:
         typer.echo(f"Moved {tool}: {old_cat.name} → {category}.")
+
+
+@app.command()
+def delete(
+    tool: str = typer.Argument(..., help="note to delete"),
+    force: bool = typer.Option(False, "--force", "-y", help="skip the confirmation prompt"),
+    private: bool = typer.Option(False, "--private", help="operate on the private root"),
+    repo: str = typer.Option("", "--repo", help="operate on the root with this label"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
+) -> None:
+    """Delete a note and unwire it from its category, the index, and the README."""
+    roots = _roots()
+    sel = "private" if private else repo
+    rt = root_for(roots, sel)
+    if rt is None:
+        labels = ", ".join(r.label for r in roots)
+        _die(f"no {sel or 'default'} repo configured (roots: {labels})")
+
+    note = rt.notes_dir / f"{tool}.md"
+    if not note.is_file():
+        _die(f"no note '{tool}' in the {rt.label} repo (try: kb find {tool})")
+
+    def rel(p) -> str:
+        return str(Path(p).relative_to(rt.path))
+
+    hit = notes.find_tool_category(rt, tool)
+    old_cat = hit[0] if hit else None
+    empties = old_cat is not None and all(t.slug == tool for t in old_cat.tools)
+
+    if dry_run:
+        typer.echo(f"DRY-RUN: delete {tool} from the {rt.label} repo:")
+        typer.echo(f"  remove {rel(note)}")
+        if old_cat is not None:
+            typer.echo(f"  remove bullet from {rel(old_cat.file)}")
+            if empties:
+                typer.echo(f"  {old_cat.name} becomes empty → delete it and unlink from index")
+        else:
+            typer.echo("  (uncategorized — nothing to unwire)")
+        typer.echo(f"  remove bullet from {rel(rt.readme)}")
+        return
+
+    if not force and not typer.confirm(f"Delete note '{tool}' from the {rt.label} repo?"):
+        typer.echo("Aborted.")
+        raise typer.Exit(1)
+
+    note.unlink()
+    capture.remove_readme_bullet(rt, tool)
+    if old_cat is not None:
+        if capture.remove_category_bullet(old_cat.file, tool):
+            old_cat.file.unlink()
+            capture.unwire_index_category(rt.index, old_cat.slug)
+            typer.echo(f"Deleted {tool} (removed empty {old_cat.name}).")
+        else:
+            typer.echo(f"Deleted {tool} from {old_cat.name}.")
+    else:
+        typer.echo(f"Deleted {tool} (was uncategorized).")
 
 
 def main() -> None:

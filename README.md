@@ -1,38 +1,39 @@
 # bt-knowledge-base
 
-A personal cheat-sheet of CLI tools and commands worth refreshing on. Each tool has its own page with real-world examples.
+A personal knowledge base for anything worth remembering — CLI tools and their examples, but also home projects, recipes, ideas, how-tos. Each entry is its own page; a fast CLI captures, searches, edits, and deletes them.
 
 ## Start here
 
-- **[doc/bt-knowledge-base.md](doc/bt-knowledge-base.md)** — the categorized index. Every tool lives under a category.
-- **[CLAUDE.md](CLAUDE.md)** — the three-tier structure (index → category files → tool notes) and the style rules for adding new entries.
+- **[doc/bt-knowledge-base.md](doc/bt-knowledge-base.md)** — the categorized index. Every entry lives under a category (or stays uncategorized until you file it).
+- **[CLAUDE.md](CLAUDE.md)** — the three-tier structure (index → category files → notes), the two note kinds (tool notes and plain prose notes), and the style rules for adding entries.
 
 ## Find and capture with `kb`
 
-`kb` is the day-to-day driver — a curated, searchable shell history. It's a small
+`kb` is the day-to-day driver — get/put for your notes. It's a small
 Python (Typer) CLI under `src/kb`; install it with pipx so it lands on your PATH:
 
 ```bash
-pipx install ~/Documents/repos/bt-knowledge-base   # provides the `kb` command
+pipx install --editable ~/repos/bt-knowledge-base   # provides the `kb` command
 
-kb find <terms...>     # search every example by command, intent, or section;
-                       # prints the snippet + a tool-notes/<x>.md:<line> pointer
-kb list [category]     # categories and the tools under each (or just one);
-                       #   -c category names only · -v also show each tool's sections
-kb cats [-v]           # category names only (-v adds tool counts)
+kb find <terms...>     # search EVERY note — shell examples AND prose body;
+                       #   command matches rank first; prints snippet + file:line
+kb list [category]     # categories and the entries under each (or just one);
+                       #   -c category names only · -v also show each note's sections
+kb cats [-v]           # category names only (-v adds counts)
 kb tags [-v]           # the tag vocabulary — cross-cutting labels (-v adds counts)
-kb tag <tag...>        # tools carrying a tag (several tags = tools with ALL of them);
+kb tag <tag...>        # entries carrying a tag (several tags = entries with ALL of them);
                        #   e.g. `kb tag search` for every search-ish tool, then dig in
-kb sections <tool>     # the section headings inside a tool note
-kb add <tool> ...      # editor-first capture (scaffolds + wires a new tool/category):
-                       #   --category C      home for a NEW tool
-                       #   --tags "a,b"      tags for a NEW tool (the **Tags:** line)
+kb sections <name>     # the section headings inside a note
+kb add <name> ...      # editor-first capture (scaffolds + wires a new note):
+                       #   --category C      home for the note (OPTIONAL; else uncategorized)
+                       #   --prose           plain prose note (no bash block) — for any thought
+                       #   --tags "a,b"      tags (the **Tags:** line)
                        #   --section "H"      append under an existing section
                        #   --new-section "H"  create a section, then capture
-kb move <tool> <cat>   # recategorize a tool (updates category files + index,
-                       # removing a category that becomes empty)
-kb show <tool>         # print a note to the terminal (no editor; alias: cat)
-kb open <tool>         # open a note in $EDITOR
+kb open <name>         # open a note in $EDITOR — this is how you EDIT an entry
+kb move <name> <cat>   # (re)categorize a note (updates category files + index)
+kb delete <name>       # delete a note + unwire it (alias: rm; -y to skip confirm)
+kb show <name>         # print a note to the terminal (no editor; alias: cat)
 kb --help              # common tasks + per-subcommand help
 ```
 
@@ -54,8 +55,8 @@ Configure them in `~/.config/kb/roots` (or the `$KB_ROOTS` env var):
 
 ```
 # label = path   (the FIRST root is the default write target)
-pub  = ~/Documents/repos/bt-knowledge-base
-priv = ~/Documents/repos/bt-knowledge-base-private
+pub  = ~/repos/bt-knowledge-base
+priv = ~/repos/bt-knowledge-base-private
 ```
 
 `kb find` searches **all** roots and tags each hit `[pub]` / `[priv]`. `kb add`

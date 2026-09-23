@@ -66,8 +66,12 @@ def test_orphans(repo: Root):
 
 def test_find_command_rank(repo: Root):
     res = notes.find([repo], ["ssh"])
-    assert len(res) == 2
-    assert all(e.rank == 2 for e in res)  # 'ssh' is in the command itself
+    # two command lines (rank 2) + the description prose line (rank 0, via the title)
+    cmds = [e for e in res if e.kind == "cmd"]
+    prose = [e for e in res if e.kind == "prose"]
+    assert len(cmds) == 2 and all(e.rank == 2 for e in cmds)
+    assert len(prose) == 1 and prose[0].rank == 0
+    assert res[0].rank == 2 and res[-1].rank == 0  # commands rank above prose
 
 
 def test_find_via_intent(repo: Root):
@@ -344,6 +348,127 @@ def test_add_tags_on_existing_errors(repo: Root, monkeypatch):
     monkeypatch.setenv("EDITOR", "true")
     r = runner.invoke(app, ["add", "ssh", "--tags", "remote"])
     assert r.exit_code == 1
+
+
+# --- prose search ---------------------------------------------------------
+
+
+def test_find_prose_body(repo: Root):
+    (repo.notes_dir / "paint.md").write_text(
+        "# revere-pewter\n\nBenjamin Moore Revere Pewter HC-172.\n\n"
+        "## Living room\n\n- two coats over primer\n"
+    )
+    # matches a body bullet only reachable via prose search
+    res = notes.find([repo], ["coats"])
+    assert len(res) == 1
+    e = res[0]
+    assert e.kind == "prose" and e.rank == 0
+    assert e.command == "two coats over primer"  # leading "- " stripped
+    assert e.section == "Living room"
+
+
+def test_find_prose_via_title(repo: Root):
+    # "pewter" lives only in the title; the body line carries it as context
+    (repo.notes_dir / "paint.md").write_text("# revere-pewter\n\nBenjamin Moore, 2 coats.\n")
+    res = notes.find([repo], ["pewter"])
+    assert len(res) == 1 and res[0].kind == "prose"
+
+
+def test_find_skips_fenced_and_headings(repo: Root):
+    # prose search must ignore code-fence lines and heading text
+    text = "# note\n\nbody line here.\n\n```bash\nsecret-cmd\n```\n"
+    got = [txt for _, _, txt in notes.iter_prose(text)]
+    assert got == ["body line here."]
+
+
+# --- delete ---------------------------------------------------------------
+
+
+def test_delete_categorized_empties(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["delete", "ssh", "-y"])
+    assert r.exit_code == 0
+    assert not (repo.notes_dir / "ssh.md").exists()
+    # category had only ssh -> removed + unlinked from index
+    assert not (repo.categories_dir / "network.md").exists()
+    assert "network.md" not in repo.index.read_text()
+    assert "[ssh]" not in repo.readme.read_text()  # README bullet gone
+
+
+def test_delete_alias_rm(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["rm", "ssh", "-y"])
+    assert r.exit_code == 0
+    assert not (repo.notes_dir / "ssh.md").exists()
+
+
+def test_delete_uncategorized(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["delete", "orphan", "-y"])
+    assert r.exit_code == 0
+    assert not (repo.notes_dir / "orphan.md").exists()
+    # network category untouched
+    assert (repo.categories_dir / "network.md").exists()
+
+
+def test_delete_dry_run_writes_nothing(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    before = (repo.notes_dir / "ssh.md").read_text()
+    r = runner.invoke(app, ["delete", "ssh", "--dry-run"])
+    assert r.exit_code == 0 and "DRY-RUN" in r.output
+    assert (repo.notes_dir / "ssh.md").read_text() == before
+    assert (repo.categories_dir / "network.md").exists()
+
+
+def test_delete_unknown(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    assert runner.invoke(app, ["delete", "nope", "-y"]).exit_code == 1
+
+
+def test_delete_confirm_abort(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["delete", "ssh"], input="n\n")
+    assert r.exit_code == 1
+    assert (repo.notes_dir / "ssh.md").exists()  # not deleted
+
+
+# --- prose add + optional category ----------------------------------------
+
+
+def test_add_prose_note(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    r = runner.invoke(app, ["add", "paint", "--prose", "--category", "Home", "--tags", "home"])
+    assert r.exit_code == 0
+    text = (repo.notes_dir / "paint.md").read_text()
+    assert "**Tags:** home" in text
+    assert "```bash" not in text  # prose: no shell scaffold
+    assert capture.PROSE_BODY in text
+
+
+def test_add_without_category_is_uncategorized(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    r = runner.invoke(app, ["add", "shower-idea", "--prose"])
+    assert r.exit_code == 0
+    assert (repo.notes_dir / "shower-idea.md").exists()
+    # listed in README but in no category file
+    assert "[shower-idea]" in repo.readme.read_text()
+    cats = notes.list_categories(repo)
+    assert notes.find_tool_category(repo, "shower-idea") is None
+    assert "shower-idea" in notes.orphan_tools(repo, cats)
+
+
+def test_write_new_note_prose_return_line(tmp_path):
+    p = tmp_path / "x.md"
+    land = capture.write_new_note(p, "x", "desc", tags=["a"], prose=True)
+    assert p.read_text().splitlines()[land - 1] == capture.PROSE_BODY
+
+
+def test_remove_readme_bullet(repo: Root):
+    assert capture.remove_readme_bullet(repo, "ssh") is True
+    assert "[ssh]" not in repo.readme.read_text()
+    assert capture.remove_readme_bullet(repo, "ssh") is False  # already gone
 
 
 def test_root_for():

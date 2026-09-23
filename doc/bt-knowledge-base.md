@@ -1,8 +1,10 @@
-# Command Line commands
+# Knowledge Base
 
-A categorized index of CLI tools I want to refresh on. Click into a category for its tools; each tool links to a note with examples. Empty categories below are placeholders waiting for content.
+A categorized index of everything worth remembering — CLI tools and their examples, but also anything else: home projects, recipes, ideas, how-tos. Click into a category for its entries; each links to a note. Empty categories below are placeholders waiting for content.
 
-## Find a tool
+Fastest path in and out is the `kb` CLI (see the README): `kb add` to capture, `kb find <terms>` to search every note (shell examples *and* prose), `kb open` to edit, `kb delete` to remove.
+
+## Find an entry
 
 Run from the repo root:
 
@@ -25,7 +27,7 @@ Shell function (optional — add to `~/.zshrc` for `tool <name>`):
 
 ```bash
 tool() {
-    local repo="$HOME/Documents/repos/bt-knowledge-base"
+    local repo="$HOME/repos/bt-knowledge-base"
     if [[ -z "$1" ]]; then
         fd . "$repo/tool-notes" -e md | fzf --preview "bat --color=always {}" | xargs -r ${EDITOR:-bat}
     else

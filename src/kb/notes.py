@@ -55,13 +55,14 @@ class TaggedTool:
 
 @dataclass(frozen=True)
 class Example:
-    rank: int  # 2 = every term in the command, 1 = matched via intent/section
+    rank: int  # 2 = every term in the command, 1 = via intent/section, 0 = prose body
     label: str  # repo label
     file: str  # tool-notes/<x>.md (repo-relative)
     line: int  # 1-based line number
     section: str
-    command: str
+    command: str  # the matched line: a shell command (kind="cmd") or prose (kind="prose")
     intent: str
+    kind: str = "cmd"  # "cmd" = shell example line, "prose" = note body text
 
 
 def _strip_fence(line: str) -> str:
@@ -209,6 +210,39 @@ def iter_examples(text: str):
         yield n, (section or title), command, intent
 
 
+def iter_prose(text: str):
+    """Yield (line_no, section, text) for note *body* lines — prose, bullets, table
+    rows — excluding code fences, headings, the `**Tags:**` line, and blank lines.
+
+    This is what makes non-shell notes (a recipe, a home-improvement thought)
+    findable: iter_examples only sees inside ```code fences, iter_prose sees the rest.
+    """
+    title = ""
+    section = ""
+    in_block = False
+    for n, line in enumerate(text.splitlines(), start=1):
+        if line.startswith("```"):
+            in_block = not in_block
+            continue
+        if in_block:
+            continue
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if line.startswith("# ") and not title:
+            title = line[2:].strip()
+            continue
+        if re.match(r"^#{1,6} ", line):
+            section = re.sub(r"^#+\s+", "", line).strip()
+            continue
+        if _TAGS_RE.match(stripped):
+            continue
+        # Strip a leading list marker for cleaner display; keep the text.
+        display = re.sub(r"^\s*[-*+]\s+", "", line).strip()
+        if display:
+            yield n, (section or title), display
+
+
 def find(roots: list[Root], terms: list[str]) -> list[Example]:
     words = [w.lower() for w in terms if w]
     results: list[Example] = []
@@ -219,7 +253,9 @@ def find(roots: list[Root], terms: list[str]) -> list[Example]:
         for path in sorted(notes_dir.glob("*.md")):
             if path.name == "README.md":
                 continue
-            for n, section, command, intent in iter_examples(path.read_text()):
+            text = path.read_text()
+            rel = f"tool-notes/{path.name}"
+            for n, section, command, intent in iter_examples(text):
                 haystack = f"{command} {intent} {section}".lower()
                 if not all(w in haystack for w in words):
                     continue
@@ -229,11 +265,27 @@ def find(roots: list[Root], terms: list[str]) -> list[Example]:
                     Example(
                         rank=rank,
                         label=root.label,
-                        file=f"tool-notes/{path.name}",
+                        file=rel,
                         line=n,
                         section=section,
                         command=command,
                         intent=intent,
+                    )
+                )
+            for n, section, prose in iter_prose(text):
+                haystack = f"{prose} {section}".lower()
+                if not all(w in haystack for w in words):
+                    continue
+                results.append(
+                    Example(
+                        rank=0,
+                        label=root.label,
+                        file=rel,
+                        line=n,
+                        section=section,
+                        command=prose,
+                        intent="",
+                        kind="prose",
                     )
                 )
     results.sort(key=lambda e: (-e.rank, e.label, e.file, e.line))

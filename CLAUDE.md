@@ -4,15 +4,20 @@ Guide for Claude when working in this repo.
 
 ## What this repo is
 
-A personal CLI cheat-sheet. The audience is the repo owner, refreshing on commands he has used before but doesn't use often. The job of each tool note is to **jog memory**, not teach from scratch — show real examples the way he last used them.
+A personal knowledge base for the repo owner. It started as a CLI cheat-sheet and still holds many tool notes, but it's for **anything worth remembering** — home projects, recipes, how-tos, ideas. The job of every note is to **jog memory**, not teach from scratch. There are two note kinds:
+
+- **Tool notes** — a CLI tool with real command examples (the original style; see below).
+- **Prose notes** — plain text about anything, no commands (see "Prose note style").
+
+Both live in the same store and are captured/searched/edited/deleted the same way via the `kb` CLI (`src/kb`, documented in the README). `kb find` searches command examples *and* prose body, so any note is findable.
 
 ## Three-tier structure
 
 1. **Top-level index** — `doc/bt-knowledge-base.md`. Lists categories only. Populated categories are links; empty categories are placeholders (plain text, no link).
-2. **Category files** — `doc/categories/<kebab-case>.md`. One per category. Lists the tools in that category, each linking to its tool note. Short intro line is fine; no examples here.
-3. **Tool notes** — `tool-notes/<tool>.md`. Where the actual examples live. One file per tool.
+2. **Category files** — `doc/categories/<kebab-case>.md`. One per category. Lists the entries in that category, each linking to its note. Short intro line is fine; no examples here.
+3. **Notes** — `tool-notes/<name>.md`. Where the content lives, one file per entry. (The directory name is historical — it holds every note kind, not just tools.)
 
-Examples never live in tiers 1 or 2 — only in tool notes.
+Content never lives in tiers 1 or 2 — only in the notes. A note may also be **uncategorized** (no category-file bullet); it still lives in `tool-notes/`, is listed by `kb list` under "(uncategorized)", and is fully searchable. File it later with `kb move <name> <category>`.
 
 ## Path conventions
 
@@ -57,7 +62,24 @@ cmd ...                # next example
 
 Not every section is mandatory — only `# title` + 1-line description + at least one use-case block. Add `Cool features`, `Habit shifts`, and `Killer flags` when they earn their keep.
 
-The optional `**Tags:**` line sits directly under the description (before the first `##`). Tags are cross-cutting, many-to-many labels — orthogonal to the single category — so `kb tag <tag>` can gather every tool for a job (e.g. `search`) across categories. Keep them lowercase kebab, separated by ` · ` (commas also parse). Reuse existing tags rather than coining near-duplicates; `kb tags` shows the current vocabulary. Categories still follow the one-home rule; tags don't replace them.
+The optional `**Tags:**` line sits directly under the description (before the first `##`). Tags are cross-cutting, many-to-many labels — orthogonal to the single category — so `kb tag <tag>` can gather every entry for a job (e.g. `search`) across categories. Keep them lowercase kebab, separated by ` · ` (commas also parse). Reuse existing tags rather than coining near-duplicates; `kb tags` shows the current vocabulary. Categories still follow the one-home rule; tags don't replace them.
+
+## Prose note style
+
+For a non-tool entry (a home project, a recipe, an idea), skip the tool-note scaffolding entirely — no `Cool features`, no bash blocks. A prose note is just:
+
+```markdown
+# short-title
+
+One-line summary of what this is.
+
+**Tags:** tag-one · tag-two          (optional)
+
+Write freely. Plain paragraphs and bullet lists. Add `## sections` only
+once the note grows enough to need them.
+```
+
+`kb add <name> --prose` scaffolds exactly this (and `--category` is optional). Keep the title short and kebab-case — it's the filename slug *and* a search signal (`kb find` matches the title, so a word in the title makes the note findable even if the body doesn't repeat it). Everything else is freeform; the only rule is that the body is real content, not a template.
 
 ## When the user provides input
 

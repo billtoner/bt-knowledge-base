@@ -89,14 +89,31 @@ def add_section(path: Path, heading: str, template: str = TEMPLATE) -> int:
 # ---------------------------------------------------------------------------
 # new notes: scaffold + wire category + index + README
 # ---------------------------------------------------------------------------
+PROSE_BODY = "<your note — write freely; add ## sections if it grows>"
+
+
 def write_new_note(
-    path: Path, tool: str, desc: str, template: str = TEMPLATE, tags: list[str] | None = None
-) -> None:
+    path: Path,
+    tool: str,
+    desc: str,
+    template: str = TEMPLATE,
+    tags: list[str] | None = None,
+    prose: bool = False,
+) -> int:
+    """Scaffold a new note. Returns the 1-based line the editor should land on
+    (the prose body for a prose note, the bash template line otherwise)."""
+    lines = [f"# {tool}", "", desc, ""]
     tl = tag_line(tags or [])
-    head = f"# {tool}\n\n{desc}\n\n"
     if tl:
-        head += f"{tl}\n\n"
-    path.write_text(f"{head}## Examples\n\n```bash\n{template}\n```\n")
+        lines += [tl, ""]
+    if prose:
+        lines += [PROSE_BODY]
+        land = len(lines)  # the body line
+    else:
+        lines += ["## Examples", "", "```bash", template, "```"]
+        land = len(lines) - 1  # the template line, just above the closing fence
+    path.write_text("\n".join(lines) + "\n")
+    return land
 
 
 def add_category_bullet(
@@ -126,6 +143,25 @@ def remove_category_bullet(cat_file: Path, tool: str) -> bool:
         out.append(line)
     cat_file.write_text("\n".join(out).rstrip("\n") + "\n")
     return not any(_BULLET_RE.match(line) for line in out)
+
+
+def remove_readme_bullet(root: Root, tool: str) -> bool:
+    """Remove the tool's bullet from tool-notes/README.md '## Tools'. Returns True
+    if a bullet was removed."""
+    readme = root.readme
+    if not readme.exists():
+        return False
+    removed = False
+    out: list[str] = []
+    for line in readme.read_text().splitlines():
+        m = re.match(r"^- \[[^\]]+\]\(([^)]+)\)", line)
+        if m and Path(m.group(1)).stem == tool:
+            removed = True
+            continue
+        out.append(line)
+    if removed:
+        readme.write_text("\n".join(out) + "\n")
+    return removed
 
 
 def unwire_index_category(index: Path, slug: str) -> None:
