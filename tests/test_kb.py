@@ -275,8 +275,15 @@ def test_show_raw_flag(repo: Root, monkeypatch):
 def test_render_markdown_non_tty_is_raw(capsys):
     from kb.cli import render_markdown
 
-    render_markdown("# hi\n\nbody\n")  # stdout captured => not a tty => raw
+    render_markdown("# hi\n\nbody\n")  # stdout captured => not a tty => raw, no pager
     assert capsys.readouterr().out == "# hi\n\nbody\n"
+
+
+def test_show_no_pager_flag(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["show", "ssh", "--no-pager"])
+    assert r.exit_code == 0
+    assert "# ssh" in r.output
 
 
 def test_note_tags_parsing():

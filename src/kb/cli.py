@@ -113,24 +113,43 @@ def _tilde(p: Path) -> str:
 
 
 # Markdown renderers to try, in order of preference, when showing interactively.
+# Color is forced because output is captured (a pipe), then handed to the pager.
 _RENDERERS = (
     ["glow", "-"],  # true markdown rendering
-    ["bat", "-l", "md", "--style=plain", "--paging=never"],  # colorized fallback
+    ["bat", "-l", "md", "--style=plain", "--color=always"],  # colorized fallback
 )
 
 
-def render_markdown(text: str, raw: bool = False) -> None:
-    """Print a note. Rendered through glow/bat when stdout is a TTY and one is
-    available; raw otherwise — so pipes, redirects, and `--raw` stay verbatim."""
-    if not raw and sys.stdout.isatty():
-        for cmd in _RENDERERS:
-            if shutil.which(cmd[0]):
-                try:
-                    subprocess.run(cmd, input=text, text=True, check=True)
-                    return
-                except (subprocess.SubprocessError, OSError):
-                    continue
-    typer.echo(text, nl=False)
+def _render(text: str) -> str | None:
+    """Return `text` rendered to ANSI via glow/bat, or None if neither is present."""
+    for cmd in _RENDERERS:
+        if shutil.which(cmd[0]):
+            try:
+                r = subprocess.run(cmd, input=text, capture_output=True, text=True, check=True)
+                return r.stdout
+            except (subprocess.SubprocessError, OSError):
+                continue
+    return None
+
+
+def _page(text: str) -> None:
+    """Send text to $PAGER (default `less -RF`: keep color, quit if it fits a screen)."""
+    pager = os.environ.get("PAGER") or "less -RF"
+    try:
+        subprocess.run(shlex.split(pager), input=text, text=True, check=True)
+    except (subprocess.SubprocessError, OSError):
+        typer.echo(text, nl=False)
+
+
+def render_markdown(text: str, raw: bool = False, pager: bool = True) -> None:
+    """Print a note. Rendered through glow/bat and paged when stdout is a TTY;
+    raw and un-paged when piped, redirected, or with --raw — so pipes stay verbatim."""
+    interactive = sys.stdout.isatty()
+    out = text if (raw or not interactive) else (_render(text) or text)
+    if pager and interactive:
+        _page(out)
+    else:
+        typer.echo(out, nl=False)
 
 
 def open_at(path: Path, line: int) -> None:
@@ -334,16 +353,18 @@ def open_cmd(tool: str = typer.Argument(..., help="tool note to open")) -> None:
 def show(
     tool: str = typer.Argument(..., help="note to print"),
     raw: bool = typer.Option(False, "--raw", "-r", help="print raw markdown (no rendering)"),
+    no_pager: bool = typer.Option(False, "--no-pager", "-P", help="print inline (don't page)"),
 ) -> None:
     """Print a note to the terminal — like `open`, but no editor.
 
-    Renders the markdown (via glow/bat) when viewed interactively; prints raw
-    when piped, redirected, or with --raw, so `kb show x | glow -` still works.
+    Renders the markdown (via glow/bat) and pages it (via $PAGER) when viewed
+    interactively; prints raw and un-paged when piped, redirected, or with --raw,
+    so `kb show x | glow -` still works. --no-pager keeps it inline.
     """
     for root in _roots():
         note = root.notes_dir / f"{tool}.md"
         if note.is_file():
-            render_markdown(note.read_text(), raw=raw)
+            render_markdown(note.read_text(), raw=raw, pager=not no_pager)
             return
     _die(f"no note: {tool} (try: kb find {tool})")
 
