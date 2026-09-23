@@ -2,6 +2,8 @@
 
 A modern command runner; like make, but for tasks (not file builds).
 
+**Tags:** task-runner
+
 ## Everyday
 
 ```bash

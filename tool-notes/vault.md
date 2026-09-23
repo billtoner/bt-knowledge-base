@@ -2,6 +2,8 @@
 
 HashiCorp Vault CLI; auth, KV secrets, dynamic credentials, transit.
 
+**Tags:** secrets · crypto
+
 ## Auth & status
 
 ```bash

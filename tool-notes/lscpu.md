@@ -2,6 +2,8 @@
 
 CPU architecture, topology, caches, and instruction-set flags.
 
+**Tags:** hardware · cpu
+
 ## Use it
 
 ```bash

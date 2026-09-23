@@ -3,6 +3,8 @@
 List open files — and since everything on Unix is a file, that means the
 processes behind ports, sockets, locked mounts, and deleted-but-still-held files.
 
+**Tags:** process · debugging
+
 ## Cool features
 
 - **`-a` ANDs your filters.** Multiple selectors are OR by default; `-a` turns them into AND, so you can ask "network files *of this PID*".

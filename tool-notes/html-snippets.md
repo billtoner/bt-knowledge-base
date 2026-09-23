@@ -2,6 +2,8 @@
 
 Boilerplates and patterns worth a copy-paste. Not a tutorial — the things you forget exactly how to type each time.
 
+**Tags:** html · docs
+
 ## Modern HTML5 page
 
 ```html

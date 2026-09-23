@@ -2,6 +2,8 @@
 
 Convert the output of common Unix commands to JSON. Lets you pipe `ps`, `df`, `dig`, `lsblk`, `systemctl`, `ifconfig`, `git log`, etc. straight into `jq`.
 
+**Tags:** json · data
+
 ## Cool features
 
 - **80+ parsers built in.** `jc --list-parsers` shows them all — covers most "annoying-to-parse" command output.

@@ -2,6 +2,8 @@
 
 Create, convert, and inspect SSH keys; fingerprints and host-key management.
 
+**Tags:** ssh · keys · crypto
+
 ## Make keys
 
 ```bash

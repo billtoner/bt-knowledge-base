@@ -2,6 +2,8 @@
 
 `grep` for network packets. Match a regex against payload bytes flying by on the wire.
 
+**Tags:** network · packets
+
 ## Cool features
 
 - **Matches on payload, not headers.** `ngrep 'User-Agent: curl' port 80` finds HTTP traffic by content — a thing `tcpdump` makes painful.

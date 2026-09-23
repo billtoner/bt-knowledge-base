@@ -2,6 +2,8 @@
 
 Low-level Bluetooth control via raw HCI commands. **Deprecated** in BlueZ 5; many subcommands have been removed on newer distros. Most use cases now belong to `bluetoothctl` or `btmgmt`, but `hcitool` is still useful when scripting RSSI checks or talking to legacy stacks.
 
+**Tags:** hardware · bluetooth · deprecated
+
 ## Cool features
 
 - **`lescan`** — pre-`bluetoothctl` way to discover BLE devices, still works on systems where it's installed.

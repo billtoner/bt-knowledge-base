@@ -2,6 +2,8 @@
 
 Agentless configuration management and orchestration over SSH. Covers the whole family: `ansible` (ad-hoc), `ansible-playbook` (playbooks), `ansible-vault` (secrets), `ansible-inventory`, `ansible-galaxy`, `ansible-config`, `ansible-doc`.
 
+**Tags:** iac
+
 ## Cool features
 
 - **Agentless.** Only needs Python on the target and SSH access — no daemon to install.

@@ -2,6 +2,8 @@
 
 A modern `ps`; colored output, tree view, search, and ports/containers built in.
 
+**Tags:** process · monitoring · modern-unix
+
 ## Use it
 
 ```bash

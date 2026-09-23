@@ -2,6 +2,8 @@
 
 TLS/crypto swiss army knife; certificates, keys, CSRs, and server debugging.
 
+**Tags:** crypto · tls · security
+
 ## Inspect certs & connections
 
 ```bash

@@ -2,6 +2,8 @@
 
 The standard Unix password store; gpg-encrypted files in a git repo.
 
+**Tags:** passwords · secrets · crypto
+
 ## Daily use
 
 ```bash

@@ -2,6 +2,8 @@
 
 Block devices, partitions, mounts, and sizes as a tree.
 
+**Tags:** disk · hardware
+
 ## Use it
 
 ```bash

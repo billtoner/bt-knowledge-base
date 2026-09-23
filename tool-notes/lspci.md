@@ -2,6 +2,8 @@
 
 List PCI devices; bound drivers, IDs, and bus topology.
 
+**Tags:** hardware
+
 ## Use it
 
 ```bash

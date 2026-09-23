@@ -4,6 +4,8 @@ The venerable Linux packet filter. Rules live in **chains** (`INPUT`, `OUTPUT`, 
 
 Note: most modern distros run `iptables-nft` under the hood — the CLI here translates to nftables rules. Coexisting `nft` and `iptables` commands can confuse each other; pick one for any given host.
 
+**Tags:** firewall · network
+
 ## Cool features
 
 - **`-m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT`** is the one rule that makes a sane stateful firewall possible. Almost every ruleset starts with it.

@@ -2,6 +2,8 @@
 
 Infrastructure as code in real languages; stacks, config, encrypted secrets.
 
+**Tags:** iac
+
 ## Stack workflow
 
 ```bash

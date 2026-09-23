@@ -2,6 +2,8 @@
 
 Modern replacement for `netstat`. Reads kernel socket info directly — instant on hosts where `netstat` crawls.
 
+**Tags:** network
+
 ## Cool features
 
 - **Built-in filter language.** `ss -t state established '( dport = :443 or dport = :80 )'` — no `grep`/`awk` pipeline needed.

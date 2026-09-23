@@ -2,6 +2,8 @@
 
 `node -e '...'` and `npx <tool>` tricks. JavaScript on the command line without a project or `npm init`.
 
+**Tags:** scripting · one-liners · javascript
+
 ## Cool features
 
 - **`node -e 'expr'`** runs any expression; full stdlib (`fs`, `crypto`, `http`, `url`, `path`) is available.

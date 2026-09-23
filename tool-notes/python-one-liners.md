@@ -2,6 +2,8 @@
 
 `python3` tricks that earn their keep on the command line — no script file, no project, just one command.
 
+**Tags:** scripting · one-liners · python
+
 ## Cool features
 
 - **`-m` runs a stdlib module as a script.** `python3 -m http.server`, `python3 -m json.tool`, `python3 -m venv .venv`. Whole tools hiding in the stdlib.

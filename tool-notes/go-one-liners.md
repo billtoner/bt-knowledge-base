@@ -2,6 +2,8 @@
 
 Quick Go from the shell; `go run`, docs, and run-a-tool-without-installing.
 
+**Tags:** scripting · one-liners · go
+
 ## Run & docs
 
 ```bash

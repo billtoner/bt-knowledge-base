@@ -3,6 +3,8 @@
 Fast Python project, dependency, and environment manager (the one this repo's
 kb tool is installed with).
 
+**Tags:** python · packaging
+
 ## Projects & dependencies
 
 ```bash

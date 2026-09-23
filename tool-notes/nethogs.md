@@ -2,6 +2,8 @@
 
 `top` for network bandwidth, grouped **by process** rather than by flow. The answer to "*which* program is eating the link?"
 
+**Tags:** network · monitoring · tui
+
 ## Quick start
 
 ```bash

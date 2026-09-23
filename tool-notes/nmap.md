@@ -2,6 +2,8 @@
 
 Port scanning, host discovery, service identification. Use on networks you own or have explicit permission to scan.
 
+**Tags:** network · security
+
 ## Cool features
 
 - **NSE scripts** (`--script`) run Lua tests for vulns, brute-force, banner enumeration, TLS introspection — far beyond port discovery.

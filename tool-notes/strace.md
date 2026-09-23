@@ -3,6 +3,8 @@
 Trace the system calls and signals of a process — the first stop for "what is
 it actually doing / why is it stuck".
 
+**Tags:** debugging · tracing
+
 ## Attach or launch
 
 ```bash

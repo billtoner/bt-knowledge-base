@@ -2,6 +2,8 @@
 
 Secure shell — remote login, remote command execution, port forwarding, file-transfer transport for `scp`/`rsync`/`sftp`. The bedrock.
 
+**Tags:** ssh · remote
+
 ## Cool features
 
 - **`~/.ssh/config` aliases everything.** Once `Host prod` is defined, `ssh prod` resolves user, hostname, port, identity, jump host, all of it.

@@ -2,6 +2,8 @@
 
 jq for HTML; extract content with CSS selectors.
 
+**Tags:** html · data
+
 ## Extract
 
 ```bash

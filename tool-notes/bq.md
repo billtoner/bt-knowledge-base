@@ -2,6 +2,8 @@
 
 BigQuery CLI — run queries, manage datasets/tables, and load or extract data.
 
+**Tags:** cloud · gcp · sql
+
 ## Querying
 
 ```bash

@@ -2,6 +2,8 @@
 
 Per-directory environment variables, auto-loaded when you `cd` in.
 
+**Tags:** shell · env
+
 ## Use it
 
 ```bash

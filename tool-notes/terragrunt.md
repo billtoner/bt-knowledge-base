@@ -3,6 +3,8 @@
 Keep Terraform DRY across environments; generated backend/provider config and
 dependency-ordered runs.
 
+**Tags:** iac
+
 ## Run like terraform
 
 ```bash

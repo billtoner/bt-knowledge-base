@@ -2,6 +2,8 @@
 
 Recursive directory listing as a tree.
 
+**Tags:** files · listing
+
 ## Use it
 
 ```bash

@@ -4,6 +4,8 @@ YAML/JSON/XML processor with jq-style syntax. Edit YAML files **preserving comme
 
 > Two implementations exist: **mikefarah/yq** (Go; default on Homebrew) and **kislyuk/yq** (Python wrapper around jq). They have different syntax. This note covers mikefarah's (`yq --version` → `mikefarah/yq` if you have the common one).
 
+**Tags:** yaml · json · data
+
 ## Cool features
 
 - **Same operations work on YAML, JSON, and XML.** `-o=json`, `-p=xml`, etc. flip the format.

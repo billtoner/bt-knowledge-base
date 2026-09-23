@@ -2,6 +2,8 @@
 
 Active throughput measurement between two hosts. "Is the network actually slow, or is it the app?"
 
+**Tags:** network · monitoring
+
 ## Cool features
 
 - **`-R` reverses direction** without swapping which side runs the server. Test download with the same setup.

@@ -2,6 +2,8 @@
 
 Render local markdown using GitHub's own API and serve it on localhost. The output is byte-for-byte what github.com would show — same fonts, same syntax highlighter, same emoji set.
 
+**Tags:** markdown · viewer
+
 ## Cool features
 
 - **GitHub-identical rendering.** No "almost like GitHub" — it *is* GitHub doing the rendering server-side.

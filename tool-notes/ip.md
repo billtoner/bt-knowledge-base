@@ -2,6 +2,8 @@
 
 The modern replacement for `ifconfig`, `route`, and `arp`. One command for everything to do with interfaces, addresses, routes, and neighbors.
 
+**Tags:** network
+
 ## Cool features
 
 - **`ip route get`** tells you exactly which interface, gateway, and source IP the kernel would use for a destination. Beats squinting at the routing table.

@@ -2,6 +2,8 @@
 
 Build, run, and manage containers and images — plus `docker compose` for stacks.
 
+**Tags:** containers
+
 ## Run & exec
 
 ```bash

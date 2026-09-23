@@ -2,6 +2,8 @@
 
 Command-line interface to NetworkManager. Manages Wi-Fi, Ethernet, VPN, mobile broadband, and bridge/bond/team connections as **persistent profiles** — settings survive reboot, unlike raw `ip` commands.
 
+**Tags:** network · wireless
+
 ## Cool features
 
 - **Persistent profiles.** Every connection is a saved profile under `/etc/NetworkManager/system-connections/` — reconnect on boot, no scripts needed.

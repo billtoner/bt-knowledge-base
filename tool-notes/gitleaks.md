@@ -2,6 +2,8 @@
 
 Scan repos and files for committed secrets; this repo's pre-commit hook.
 
+**Tags:** security · secrets · git
+
 ## Scan
 
 ```bash

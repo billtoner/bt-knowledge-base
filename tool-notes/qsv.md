@@ -2,6 +2,8 @@
 
 Fast CSV toolkit; slice, stats, join, frequency, and search — a CSV swiss army knife.
 
+**Tags:** csv · data
+
 ## Look around
 
 ```bash

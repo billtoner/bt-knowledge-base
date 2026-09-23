@@ -2,6 +2,8 @@
 
 Full-screen TUI for git. Replaces command-flag memorization with keybindings + visual diffs.
 
+**Tags:** git · tui
+
 ## Launch + orientation
 
 ```bash

@@ -2,6 +2,8 @@
 
 TUI spreadsheet for tabular data. Opens CSV, TSV, JSON, JSONL, SQLite, Parquet, Excel, HTML tables, fixed-width — and lets you sort, filter, pivot, group, and re-save in any format. The "I just need to look at this CSV" tool.
 
+**Tags:** data · csv · tui
+
 ## Cool features
 
 - **One viewer for everything.** Same keystrokes whether the input is `.csv`, `.json`, `.parquet`, `.db`, or a remote URL.

@@ -3,6 +3,8 @@
 Trace-based profiler with a beautiful interactive web viewer. Strength: visualizing **async
 execution** and per-function timing across many threads/coroutines.
 
+**Tags:** profiling · python
+
 ## Status for FPOC
 
 **Defer unless** you have a specific async timing mystery. Heavier ceremony than py-spy:

@@ -2,6 +2,8 @@
 
 Smaller, friendlier DNS lookup. When you don't need `dig`'s detail, `host` says the answer in one line.
 
+**Tags:** dns · network
+
 ## Quick lookups
 
 ```bash

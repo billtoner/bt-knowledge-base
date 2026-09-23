@@ -2,6 +2,8 @@
 
 Front door to systemd. Start/stop/enable services, inspect state, and edit units safely.
 
+**Tags:** systemd · services
+
 ## Cool features
 
 - **`--now` combo flag.** `enable --now` and `disable --now` do both states in one command — no need to enable *and* start as separate steps.

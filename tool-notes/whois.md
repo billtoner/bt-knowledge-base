@@ -2,6 +2,8 @@
 
 Lookup tool for domain registration and IP ownership. Underrated for incident triage — "who owns this IP that's hitting me?"
 
+**Tags:** network · dns
+
 ## Domain registration
 
 ```bash

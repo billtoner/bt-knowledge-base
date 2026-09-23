@@ -2,6 +2,8 @@
 
 Create and extract archives; the flags you always re-look-up.
 
+**Tags:** archive
+
 ## Create / extract
 
 ```bash

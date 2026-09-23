@@ -2,6 +2,8 @@
 
 Filesystem free space (`df`) and per-directory usage (`du`).
 
+**Tags:** disk
+
 ## df — free space
 
 ```bash

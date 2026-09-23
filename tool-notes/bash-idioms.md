@@ -2,6 +2,8 @@
 
 The bash language features that distinguish it from "just typing commands" — parameter expansion, arrays, process substitution, traps, heredocs. Used in scripts and one-liners alike.
 
+**Tags:** shell · scripting
+
 ## Cool features
 
 - **Parameter expansion** is a tiny language inside `${...}`: defaults, error-if-unset, substring, search/replace, case change, prefix/suffix strip.

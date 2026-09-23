@@ -2,6 +2,8 @@
 
 Find and signal processes by name or attributes (pgrep, pkill).
 
+**Tags:** process
+
 ## Find
 
 ```bash

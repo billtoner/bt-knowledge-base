@@ -3,6 +3,8 @@
 The Go toolchain; build, test, run, modules, vet. (For quick snippets, see
 go-one-liners under Languages & Scripting.)
 
+**Tags:** build · language · go
+
 ## Build / run / test
 
 ```bash

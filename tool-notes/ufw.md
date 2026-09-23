@@ -2,6 +2,8 @@
 
 Ubuntu's friendly frontend over iptables/nftables. Optimized for "I just want SSH and HTTPS open and everything else closed."
 
+**Tags:** firewall · network
+
 ## Cool features
 
 - **`ufw limit`** rate-limits brute-force attempts with one word. (Underneath: `6 conns / 30s` per source → drop.)

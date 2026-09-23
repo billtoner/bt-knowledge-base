@@ -2,6 +2,8 @@
 
 The Kubernetes control-plane CLI — query and manage cluster resources.
 
+**Tags:** kubernetes · containers
+
 ## Pods that aren't Running (all namespaces)
 
 ```bash

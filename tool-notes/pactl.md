@@ -2,6 +2,8 @@
 
 Control PulseAudio (and PipeWire, via its pulse-compatibility layer) from the command line. List sinks/sources, switch default output, set volume, load modules, watch events.
 
+**Tags:** hardware · audio
+
 ## Cool features
 
 - **`@DEFAULT_SINK@` / `@DEFAULT_SOURCE@`** — symbolic names that always resolve to whatever is currently default, so scripts don't break when the device changes.

@@ -2,6 +2,8 @@
 
 Packet capture with BPF filters. The "I'll see for myself" tool when network behavior doesn't match what logs claim.
 
+**Tags:** network · packets
+
 ## Cool features
 
 - **BPF filters can match payload bytes.** Filter for "HTTP GET only" without capturing every TCP packet first.

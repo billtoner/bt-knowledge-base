@@ -2,6 +2,8 @@
 
 Homebrew package manager for macOS/Linux; formulae, casks, services.
 
+**Tags:** package-manager
+
 ## Install / upgrade
 
 ```bash

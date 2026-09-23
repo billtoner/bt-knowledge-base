@@ -2,6 +2,8 @@
 
 Scheduled jobs; crontab syntax and the systemd-timer equivalents.
 
+**Tags:** scheduling
+
 ## crontab
 
 ```bash

@@ -2,6 +2,8 @@
 
 Install Python CLI apps in isolated virtualenvs (how this repo's `kb` is installed).
 
+**Tags:** package-manager · python
+
 ## Install / run
 
 ```bash

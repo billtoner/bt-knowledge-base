@@ -2,6 +2,8 @@
 
 `perl -pe`, `-ne`, `-lane`. The original swiss army knife for stream editing — many things `sed`/`awk` make awkward become one short line in perl.
 
+**Tags:** scripting · one-liners · perl · text
+
 ## Cool features
 
 - **`-i`** edits files in place; `-i.bak` keeps a backup. Trivial bulk renames and fixups.

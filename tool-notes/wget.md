@@ -2,6 +2,8 @@
 
 HTTP / FTP downloader with recursive crawling, resumes, and retry policies. Where `curl` is for one-shot requests, `wget` shines at "pull down a tree of files reliably."
 
+**Tags:** http · download · network
+
 ## Cool features
 
 - **`-c` resumes interrupted downloads.** Big files over flaky links — just rerun the same command.

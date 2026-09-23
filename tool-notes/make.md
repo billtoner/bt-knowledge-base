@@ -2,6 +2,8 @@
 
 The ubiquitous build/task runner; targets, prerequisites, parallelism.
 
+**Tags:** task-runner · build
+
 ## Running
 
 ```bash

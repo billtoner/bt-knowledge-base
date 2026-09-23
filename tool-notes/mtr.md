@@ -2,6 +2,8 @@
 
 Continuous traceroute + ping in one screen. Watch where packets actually drop instead of inferring from a single traceroute run.
 
+**Tags:** network · monitoring
+
 ## Cool features
 
 - **`-T` for TCP probes.** When ICMP/UDP get filtered, TCP often gets through — try the port your real traffic uses.

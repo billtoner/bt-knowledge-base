@@ -2,6 +2,8 @@
 
 Stream editing; substitutions, address ranges, in-place edits.
 
+**Tags:** text
+
 ## Substitute
 
 ```bash

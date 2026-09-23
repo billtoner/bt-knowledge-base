@@ -2,7 +2,7 @@
 
 Replacement for `find`. Smart-case, gitignore-aware, parallel exec.
 
-**Tags:** search · files
+**Tags:** search · files · modern-unix
 
 ## Cool features
 

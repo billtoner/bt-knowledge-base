@@ -2,6 +2,8 @@
 
 Personal password strategy for Apple Passwords (iCloud). Goal: easy for me, hard for others, no reuse. Not a tool — a decision cheat-sheet.
 
+**Tags:** passwords · secrets
+
 ## The two-tier model
 
 - **Tier 0 — memorize ~4, as passphrases** (4-5 random words, e.g. `copper-lantern-vivid-otter`): Apple ID password, Mac login, primary email, phone passcode. 2FA on all. These unlock everything else, so they get the most care.

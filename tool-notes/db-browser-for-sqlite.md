@@ -2,6 +2,8 @@
 
 GUI for SQLite. The "double-click and eyeball the data" tool. Free, cross-platform, mature.
 
+**Tags:** database · sqlite · gui
+
 ## Cool features
 
 - **Browse Data tab** — opens any table as a spreadsheet-like view. Sort columns, filter, edit cells inline.

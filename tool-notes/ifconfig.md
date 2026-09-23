@@ -2,6 +2,8 @@
 
 Configure and inspect network interfaces. Deprecated in favor of `ip` (iproute2), but still installed on many systems and faster to recall when you need a quick look.
 
+**Tags:** network · deprecated
+
 ## Cool features
 
 - **`ifconfig` with no args lists all *up* interfaces.** Use `-a` to include downed ones.

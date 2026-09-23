@@ -2,6 +2,8 @@
 
 Make JSON greppable. Flattens JSON into one assignment per line — `json.users[0].name = "alice";` — so you can find every value with its full path using `grep`. Reversible: `gron -u` rebuilds JSON from the flat form.
 
+**Tags:** json · text
+
 ## Cool features
 
 - **Every value gets a unique path** that's both human-readable and grep-friendly.

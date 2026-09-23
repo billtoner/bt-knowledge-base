@@ -2,6 +2,8 @@
 
 Modern, colorized `dig`; JSON output, DoH/DoT, and multi-resolver comparison.
 
+**Tags:** dns · network · modern-unix
+
 ## Lookups
 
 ```bash

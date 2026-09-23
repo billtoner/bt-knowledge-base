@@ -3,6 +3,8 @@
 CLI for SQLite by Simon Willison. Replaces "write a one-off Python script to query/dump/import"
 with single commands.
 
+**Tags:** database · sqlite · sql
+
 ## Cool features
 
 - **Ad-hoc queries.** `sqlite-utils db.db "SELECT ..." --table` (or `--json`, `--csv`, `--nl`).

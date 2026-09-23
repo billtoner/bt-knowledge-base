@@ -2,6 +2,8 @@
 
 Native desktop utilities I reach for occasionally — screen capture, Markup annotation. No downloads, no BBEdit (it's text-only; it can't draw on an image).
 
+**Tags:** macos · gui
+
 ## Annotate a screenshot with a red arrow
 
 Two paths — catch the thumbnail, or edit the saved file later.

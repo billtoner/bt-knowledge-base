@@ -2,6 +2,8 @@
 
 AWS CLI v2 — auth profiles and every service API from the shell.
 
+**Tags:** cloud · aws
+
 ## Profiles & auth
 
 ```bash

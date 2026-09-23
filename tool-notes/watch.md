@@ -4,6 +4,8 @@ Re-run a command at a fixed interval, showing each run's output in place. Defaul
 
 > macOS doesn't ship `watch` — install with `brew install watch`.
 
+**Tags:** monitoring · shell
+
 ## Cool features
 
 - **`-d` highlights what changed** since the previous run — instant visual diff.

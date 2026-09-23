@@ -2,6 +2,8 @@
 
 Kubernetes package manager — install, template, and manage chart releases.
 
+**Tags:** kubernetes · containers
+
 ## Repos & search
 
 ```bash

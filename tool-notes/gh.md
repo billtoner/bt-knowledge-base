@@ -2,6 +2,8 @@
 
 GitHub from the terminal; PRs, issues, releases, Actions, and the raw API.
 
+**Tags:** git · github
+
 ## Pull requests
 
 ```bash

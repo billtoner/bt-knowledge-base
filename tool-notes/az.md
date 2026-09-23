@@ -2,6 +2,8 @@
 
 Azure CLI — auth, subscriptions, and managing Azure resources.
 
+**Tags:** cloud · azure
+
 ## Auth & subscriptions
 
 ```bash

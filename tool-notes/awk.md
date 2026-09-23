@@ -2,6 +2,8 @@
 
 Field- and record-oriented text processing; the pattern-action workhorse.
 
+**Tags:** text · data
+
 ## Fields & filters
 
 ```bash

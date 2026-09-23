@@ -2,7 +2,7 @@
 
 Modern `ls` replacement. Maintained fork of the (defunct) `exa`.
 
-**Tags:** files · listing
+**Tags:** files · listing · modern-unix
 
 ## Cool features
 

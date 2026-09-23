@@ -2,7 +2,7 @@
 
 Replacement for `grep -r`. Faster, smarter defaults, gitignore-aware.
 
-**Tags:** search · text · files
+**Tags:** search · text · files · modern-unix
 
 ## Cool features
 

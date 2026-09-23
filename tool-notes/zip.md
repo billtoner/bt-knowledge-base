@@ -2,6 +2,8 @@
 
 ZIP archives for cross-platform interop (zip / unzip).
 
+**Tags:** archive · compression
+
 ## Create
 
 ```bash

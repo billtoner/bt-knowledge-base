@@ -2,6 +2,8 @@
 
 Classic per-hop probe of a network path. Useful when you need a single snapshot (vs `mtr`'s continuous view) or when a path differs depending on protocol.
 
+**Tags:** network
+
 ## Cool features
 
 - **`-T` uses TCP probes.** Many firewalls drop UDP/ICMP traceroute but pass TCP to your real ports. Probe the path your traffic actually takes.

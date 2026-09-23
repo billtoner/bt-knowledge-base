@@ -2,6 +2,8 @@
 
 `top`, but for network connections. "Which flows are eating my bandwidth right now?"
 
+**Tags:** network · monitoring · tui
+
 ## Quick start
 
 ```bash

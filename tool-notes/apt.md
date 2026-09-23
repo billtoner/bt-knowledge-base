@@ -2,6 +2,8 @@
 
 Debian/Ubuntu package management (apt for humans, dpkg for low-level queries).
 
+**Tags:** package-manager
+
 ## Install / update / remove
 
 ```bash

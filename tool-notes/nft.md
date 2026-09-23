@@ -2,6 +2,8 @@
 
 The modern replacement for `iptables`/`ip6tables`/`arptables`/`ebtables`. One unified CLI, atomic rule loads, native sets and maps, JSON output.
 
+**Tags:** firewall · network
+
 ## Cool features
 
 - **Named sets** (`@blocklist`) let you add/remove IPs from a rule without rewriting the rule. With `flags interval` they coalesce CIDRs efficiently.

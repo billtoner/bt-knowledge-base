@@ -2,6 +2,8 @@
 
 Linux perf; hardware counters, sampling profiles, and flame-graph-ready output.
 
+**Tags:** profiling · performance
+
 ## Quick counters & live profile
 
 ```bash

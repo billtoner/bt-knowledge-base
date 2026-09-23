@@ -3,6 +3,8 @@
 Manage and run git pre-commit hooks; this repo uses it for ruff, pytest, and
 secret scanning.
 
+**Tags:** git
+
 ## Setup & run
 
 ```bash

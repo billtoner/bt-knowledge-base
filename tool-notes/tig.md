@@ -2,6 +2,8 @@
 
 A TUI for browsing git history — log, diff, blame, refs, status, all keyboard-driven.
 
+**Tags:** git · tui · viewer
+
 ## Cool features
 
 - **Multiple view modes** (cycle with `m`, or launch directly):

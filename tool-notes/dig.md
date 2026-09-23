@@ -2,6 +2,8 @@
 
 DNS debugging: query specific servers, walk the resolution chain, get the raw record types `host` won't show you.
 
+**Tags:** dns · network
+
 ## Cool features
 
 - **`+trace` walks from the root.** Catches misconfigured glue, lame delegations, and "my recursive resolver is caching a stale answer."

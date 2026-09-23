@@ -3,6 +3,8 @@
 Telnet console into a running asyncio event loop. Inspect tasks, stacks, and coroutine state
 in a live process. Requires a small **code change** to enable.
 
+**Tags:** profiling · python
+
 ## Status for FPOC
 
 **Defer until you have a specific async bug to chase.** Unlike py-spy (drop-in, profile any

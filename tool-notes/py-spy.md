@@ -4,6 +4,8 @@ Sampling profiler for Python that attaches to an **already-running process** via
 No code changes, no restart. The killer feature is "the BLE service is doing something weird —
 let's see what" without redeploying.
 
+**Tags:** profiling · python
+
 ## Status for FPOC
 
 **Probably not needed yet.** FPOC's pain points are at the audio/BT layer, not Python CPU.

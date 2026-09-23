@@ -2,6 +2,8 @@
 
 Diagrams as code; render DOT graphs to SVG/PNG with `dot` and friends.
 
+**Tags:** diagrams · docs
+
 ## Render
 
 ```bash

@@ -3,6 +3,8 @@
 A user-friendly `curl` replacement. JSON-first, colorized output, sane defaults. Pairs naturally
 with jq.
 
+**Tags:** http · network · modern-unix
+
 ## Cool features
 
 - **Auto-JSON by default.** Body is parsed and pretty-printed. Headers shown above the body in color.

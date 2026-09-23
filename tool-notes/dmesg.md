@@ -2,6 +2,8 @@
 
 Kernel ring buffer; boot, hardware, OOM-killer, and driver messages.
 
+**Tags:** logs
+
 ## Read it
 
 ```bash

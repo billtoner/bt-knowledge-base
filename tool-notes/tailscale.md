@@ -2,6 +2,8 @@
 
 WireGuard-based mesh VPN; MagicDNS, ACLs, and zero-config peer connectivity.
 
+**Tags:** vpn · network
+
 ## Connect & status
 
 ```bash

@@ -2,6 +2,8 @@
 
 Google Cloud CLI — auth, configuration, and managing GCP resources.
 
+**Tags:** cloud · gcp
+
 ## Auth & config
 
 ```bash

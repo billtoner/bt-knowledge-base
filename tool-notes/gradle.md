@@ -2,6 +2,8 @@
 
 JVM builds with Gradle (and the Maven equivalents); tasks, deps, the wrapper.
 
+**Tags:** build
+
 ## Gradle (prefer the wrapper)
 
 ```bash

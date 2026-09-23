@@ -2,6 +2,8 @@
 
 Load, list, and unload private keys in the running `ssh-agent`. The agent decrypts the key once (you type the passphrase) and ssh reuses it without re-prompting.
 
+**Tags:** ssh · keys
+
 ## Cool features
 
 - **`ssh-add` with no args loads the default identities** (`~/.ssh/id_rsa`, `~/.ssh/id_ed25519`, etc.).

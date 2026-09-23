@@ -2,6 +2,8 @@
 
 WireGuard control plane. `wg` is the low-level command (status, runtime config); `wg-quick` is the friendly wrapper that reads `/etc/wireguard/<iface>.conf` and brings interfaces up/down.
 
+**Tags:** vpn · network
+
 ## Cool features
 
 - **`wg syncconf`** reloads the config without dropping existing connections. Routes/peers update; tunnels stay alive.

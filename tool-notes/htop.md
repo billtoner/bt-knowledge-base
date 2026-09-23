@@ -2,6 +2,8 @@
 
 Interactive process and resource monitor (htop; btop for a richer UI).
 
+**Tags:** monitoring · process · tui
+
 ## Launch with a filter
 
 ```bash

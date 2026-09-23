@@ -3,6 +3,8 @@
 Historical and live system stats — sysstat's `sar`, plus `dstat` for a live
 combined view.
 
+**Tags:** monitoring · performance
+
 ## Live sampling (interval count)
 
 ```bash

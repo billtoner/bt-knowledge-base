@@ -2,6 +2,8 @@
 
 Transfer data over a URL — HTTP, HTTPS, FTP, and a dozen others. The de facto HTTP client.
 
+**Tags:** http · download · network
+
 ## Cool features
 
 - **`-L` follows redirects.** It's off by default — get used to typing it.

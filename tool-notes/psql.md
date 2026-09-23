@@ -2,6 +2,8 @@
 
 The PostgreSQL client; meta-commands, scripting, COPY, and EXPLAIN.
 
+**Tags:** database · sql · postgres
+
 ## Connect & run
 
 ```bash

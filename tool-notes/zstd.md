@@ -2,6 +2,8 @@
 
 Fast modern compression; great ratios at high speed, with tunable levels.
 
+**Tags:** compression
+
 ## Compress / decompress
 
 ```bash

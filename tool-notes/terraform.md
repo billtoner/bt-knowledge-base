@@ -2,6 +2,8 @@
 
 Provision infrastructure as code; plan, apply, state, workspaces.
 
+**Tags:** iac
+
 ## Core loop
 
 ```bash

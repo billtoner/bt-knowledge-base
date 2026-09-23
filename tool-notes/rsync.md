@@ -2,6 +2,8 @@
 
 Block-level file sync over SSH or local paths. Fast on repeat runs because it only transfers what changed. The trailing-slash rule is the one thing to memorize.
 
+**Tags:** files · sync · remote
+
 ## The trailing-slash rule
 
 ```bash

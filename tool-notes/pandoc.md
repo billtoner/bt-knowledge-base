@@ -2,6 +2,8 @@
 
 Universal document converter; markdown / HTML / PDF / docx and dozens more.
 
+**Tags:** convert · docs · markdown
+
 ## Convert
 
 ```bash

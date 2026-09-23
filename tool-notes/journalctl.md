@@ -2,6 +2,8 @@
 
 Query the systemd journal. Structured logs filterable by unit, time, boot, priority, and arbitrary metadata fields.
 
+**Tags:** logs · systemd
+
 ## Cool features
 
 - **Time ranges accept natural language.** `--since "1 hour ago"`, `--since yesterday --until today`.

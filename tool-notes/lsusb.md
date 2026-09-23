@@ -2,6 +2,8 @@
 
 List USB devices attached to the system. The quick "did the OS see my dongle?" check.
 
+**Tags:** hardware · usb
+
 ## Cool features
 
 - **`-t` shows a tree view** with hub topology, port numbers, device speeds (1.5M/12M/480M/5G). Handy for figuring out which hub a device is sitting behind.

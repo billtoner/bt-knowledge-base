@@ -2,6 +2,8 @@
 
 Boot performance and unit verification for systemd.
 
+**Tags:** systemd · performance
+
 ## Boot timing
 
 ```bash

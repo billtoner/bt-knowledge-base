@@ -2,6 +2,8 @@
 
 Command-line JSON processor. Filter, transform, and reshape JSON like `awk` for structured data.
 
+**Tags:** json · data
+
 ## Cool features
 
 - **Filter syntax is a tiny language.** `.foo.bar` navigates; `|` pipes filters; `[]` iterates arrays; `select(...)`, `map(...)`, `length`, `keys` cover most needs.

@@ -2,6 +2,8 @@
 
 Sort lines of text. The combination of `-u`, `-n`, `-h`, `-k`, and `-t` covers 99% of real use.
 
+**Tags:** text
+
 ## Cool features
 
 - **`-u` is sort + dedupe in one pass.** Faster than `sort | uniq`.

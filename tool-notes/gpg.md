@@ -2,6 +2,8 @@
 
 Encrypt, sign, and verify; OpenPGP key management.
 
+**Tags:** crypto · secrets
+
 ## Keys
 
 ```bash

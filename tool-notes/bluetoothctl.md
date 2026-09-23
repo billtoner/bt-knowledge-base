@@ -2,6 +2,8 @@
 
 Interactive and scripted control of BlueZ — Linux's Bluetooth stack. Pair devices, advertise discoverability, manage controllers.
 
+**Tags:** hardware · bluetooth
+
 ## Cool features
 
 - **Two modes.** Run with no args for an interactive `[bluetooth]#` REPL, or pass a command for one-shot use: `bluetoothctl power on`.

@@ -2,7 +2,7 @@
 
 Smarter `cd` based on **frecency** (frequency + recency). Learns where you go.
 
-**Tags:** shell · navigation
+**Tags:** shell · navigation · modern-unix
 
 ## Cool features
 

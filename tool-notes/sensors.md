@@ -2,6 +2,8 @@
 
 Read hardware temperatures, fan speeds, and voltages (lm-sensors).
 
+**Tags:** hardware · monitoring
+
 ## Use it
 
 ```bash

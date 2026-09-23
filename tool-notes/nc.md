@@ -2,6 +2,8 @@
 
 The TCP/UDP swiss army knife. Speak raw protocols, probe ports, glue stdio across the network, run a throwaway server in one line.
 
+**Tags:** network
+
 ## Cool features
 
 - **`-z` is "probe, don't connect."** Combined with `-v` it's the fastest way to ask "is this port open from where I am?"

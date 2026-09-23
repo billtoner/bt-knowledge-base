@@ -2,6 +2,8 @@
 
 Copy files between hosts over SSH. Same auth, same `~/.ssh/config`, same known_hosts as `ssh`.
 
+**Tags:** ssh · remote · files
+
 ## Cool features
 
 - **Uses SSH end-to-end.** Any host you can `ssh` to, you can `scp` to — including `~/.ssh/config` aliases.

@@ -2,6 +2,8 @@
 
 Configure and inspect wireless interfaces. Deprecated in favor of `iw` — and **doesn't speak WPA/WPA2/WPA3** (use `wpa_supplicant` or NetworkManager for those). Still useful for read-only inspection, channel/mode/power tweaks, and open or WEP networks.
 
+**Tags:** wireless · network · deprecated
+
 ## Cool features
 
 - **`iwconfig` with no args lists only *wireless* interfaces.** Skips ethernet/loopback — quick way to spot Wi-Fi NICs.

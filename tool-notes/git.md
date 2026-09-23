@@ -2,6 +2,8 @@
 
 The version control system itself — focused on the commands and flags that are easy to forget between uses.
 
+**Tags:** git
+
 ## Cool features
 
 - **`--force-with-lease`** refuses to push if someone else has updated the remote since you last fetched. Use this instead of `--force`; same effect, won't clobber a teammate.

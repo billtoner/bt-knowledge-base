@@ -2,6 +2,8 @@
 
 Modern wireless-interface command on Linux. Replaces `iwconfig` (which doesn't support WPA, monitor mode niceties, or modern radios).
 
+**Tags:** wireless · network
+
 ## Cool features
 
 - **`iw event`** streams every wireless event live — associate, disassociate, scan results, regulatory changes. Great for "what's actually happening when I lose wifi?"

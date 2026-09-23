@@ -2,6 +2,8 @@
 
 Render markdown beautifully in the terminal (a natural pair with `kb show`).
 
+**Tags:** markdown · viewer · tui
+
 ## Use it
 
 ```bash

@@ -2,6 +2,8 @@
 
 Interactive tree navigator with fuzzy search and built-in file actions.
 
+**Tags:** files · listing · navigation · search · tui
+
 ## Use it
 
 ```bash

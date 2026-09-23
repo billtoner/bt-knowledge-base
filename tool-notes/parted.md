@@ -2,6 +2,8 @@
 
 Partition disks — `parted` (scriptable) and `fdisk` (interactive).
 
+**Tags:** disk
+
 ## Inspect
 
 ```bash

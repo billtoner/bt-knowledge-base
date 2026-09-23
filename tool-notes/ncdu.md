@@ -2,6 +2,8 @@
 
 Interactive "what's eating my disk" — a navigable `du` (with `dust` for a quick tree).
 
+**Tags:** disk · tui · modern-unix
+
 ## Use it
 
 ```bash

@@ -3,6 +3,8 @@
 Free AWS-provided GUI for designing and querying DynamoDB tables. Standalone Mac app. Far
 better than the AWS web console for everything except managing the actual tables in your account.
 
+**Tags:** aws · database · gui
+
 ## Cool features
 
 ### Visualizer / Data Modeler

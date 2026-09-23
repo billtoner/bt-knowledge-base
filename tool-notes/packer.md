@@ -2,6 +2,8 @@
 
 Build identical machine/container images from a single source config.
 
+**Tags:** iac
+
 ## Build
 
 ```bash

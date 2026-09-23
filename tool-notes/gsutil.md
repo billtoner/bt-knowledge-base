@@ -3,6 +3,8 @@
 Google Cloud Storage from the command line — `gsutil`, and the newer, faster
 `gcloud storage` equivalents.
 
+**Tags:** cloud · gcp
+
 ## Everyday object ops
 
 ```bash

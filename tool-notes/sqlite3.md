@@ -2,6 +2,8 @@
 
 Official SQLite CLI. Open a `.db`, explore the schema, run queries, import/export. Lightweight, no server.
 
+**Tags:** database · sqlite · sql
+
 ## Cool features
 
 - **Dot commands** (`.tables`, `.schema`, `.mode`, `.import`) are CLI conveniences — they're not SQL, they're meta.

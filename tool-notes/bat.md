@@ -2,7 +2,7 @@
 
 `cat` with syntax highlighting, line numbers, and pager smarts.
 
-**Tags:** viewer · files
+**Tags:** viewer · files · modern-unix
 
 ## Cool features
 
