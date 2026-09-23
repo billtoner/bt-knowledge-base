@@ -33,7 +33,8 @@ kb add <name> ...      # editor-first capture (scaffolds + wires a new note):
 kb open <name>         # open a note in $EDITOR — this is how you EDIT an entry
 kb move <name> <cat>   # (re)categorize a note (updates category files + index)
 kb delete <name>       # delete a note + unwire it (alias: rm; -y to skip confirm)
-kb show <name>         # print a note to the terminal (no editor; alias: cat)
+kb show <name>         # print a note (renders via glow/bat when interactive;
+                       #   raw when piped or with --raw; alias: cat)
 kb --help              # common tasks + per-subcommand help
 ```
 

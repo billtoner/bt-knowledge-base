@@ -265,6 +265,20 @@ def test_show_unknown_tool(repo: Root, monkeypatch):
     assert r.exit_code == 1
 
 
+def test_show_raw_flag(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["show", "ssh", "--raw"])
+    assert r.exit_code == 0
+    assert "# ssh" in r.output and "## Forwarding" in r.output
+
+
+def test_render_markdown_non_tty_is_raw(capsys):
+    from kb.cli import render_markdown
+
+    render_markdown("# hi\n\nbody\n")  # stdout captured => not a tty => raw
+    assert capsys.readouterr().out == "# hi\n\nbody\n"
+
+
 def test_note_tags_parsing():
     # middot separator, mixed case, and a code fence that must be ignored
     text = (

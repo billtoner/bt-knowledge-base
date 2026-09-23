@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import shlex
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -109,6 +110,27 @@ def _roots() -> list[Root]:
 def _tilde(p: Path) -> str:
     s, home = str(p), str(Path.home())
     return "~" + s[len(home) :] if s.startswith(home) else s
+
+
+# Markdown renderers to try, in order of preference, when showing interactively.
+_RENDERERS = (
+    ["glow", "-"],  # true markdown rendering
+    ["bat", "-l", "md", "--style=plain", "--paging=never"],  # colorized fallback
+)
+
+
+def render_markdown(text: str, raw: bool = False) -> None:
+    """Print a note. Rendered through glow/bat when stdout is a TTY and one is
+    available; raw otherwise — so pipes, redirects, and `--raw` stay verbatim."""
+    if not raw and sys.stdout.isatty():
+        for cmd in _RENDERERS:
+            if shutil.which(cmd[0]):
+                try:
+                    subprocess.run(cmd, input=text, text=True, check=True)
+                    return
+                except (subprocess.SubprocessError, OSError):
+                    continue
+    typer.echo(text, nl=False)
 
 
 def open_at(path: Path, line: int) -> None:
@@ -309,14 +331,21 @@ def open_cmd(tool: str = typer.Argument(..., help="tool note to open")) -> None:
 
 
 @app.command()
-def show(tool: str = typer.Argument(..., help="tool note to print")) -> None:
-    """Print a tool note to the terminal — like `open`, but no editor."""
+def show(
+    tool: str = typer.Argument(..., help="note to print"),
+    raw: bool = typer.Option(False, "--raw", "-r", help="print raw markdown (no rendering)"),
+) -> None:
+    """Print a note to the terminal — like `open`, but no editor.
+
+    Renders the markdown (via glow/bat) when viewed interactively; prints raw
+    when piped, redirected, or with --raw, so `kb show x | glow -` still works.
+    """
     for root in _roots():
         note = root.notes_dir / f"{tool}.md"
         if note.is_file():
-            typer.echo(note.read_text(), nl=False)
+            render_markdown(note.read_text(), raw=raw)
             return
-    _die(f"no tool note: {tool} (try: kb find {tool})")
+    _die(f"no note: {tool} (try: kb find {tool})")
 
 
 @app.command()
