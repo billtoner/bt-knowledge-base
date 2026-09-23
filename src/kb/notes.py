@@ -23,6 +23,10 @@ _BULLET_RE = re.compile(r"^- \[(?P<display>[^\]]*)\]\((?P<target>[^)]*)\)(?:\s+�
 _INTENT_RE = re.compile(r"[ \t]+#")
 # A '## heading' (or deeper) section title.
 _SECTION_RE = re.compile(r"^#{2,}\s+(.*)$")
+# The cross-cutting tag line under a note's description:  **Tags:** search · files
+_TAGS_RE = re.compile(r"^\*\*Tags:\*\*\s*(?P<tags>.+?)\s*$")
+# How tags are written into a note (readable middot); parsing accepts commas too.
+TAG_SEP = " · "
 
 
 @dataclass(frozen=True)
@@ -38,6 +42,15 @@ class Category:
     slug: str  # filename stem (kebab)
     file: Path
     tools: list[ToolRef] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class TaggedTool:
+    slug: str  # tool-note filename stem
+    label: str  # repo label
+    category: str  # its category name (empty if uncategorized)
+    desc: str  # one-line description (from the category bullet)
+    tags: tuple[str, ...]  # the tags on the note, in written order
 
 
 @dataclass(frozen=True)
@@ -90,6 +103,53 @@ def list_sections(text: str) -> list[str]:
             m = _SECTION_RE.match(line)
             if m:
                 out.append(m.group(1).strip())
+    return out
+
+
+def note_tags(text: str) -> list[str]:
+    """The tags on a note's '**Tags:**' line, lowercased and de-duped in order.
+
+    The line lives just under the description, outside any code fence. Tags are
+    split on the middot separator or commas, so both `a · b` and `a, b` parse.
+    """
+    in_block = False
+    for line in text.splitlines():
+        if line.startswith("```"):
+            in_block = not in_block
+            continue
+        if in_block:
+            continue
+        m = _TAGS_RE.match(line.strip())
+        if m:
+            out: list[str] = []
+            for part in re.split(r"[·,]", m.group("tags")):
+                t = part.strip().lower()
+                if t and t not in out:
+                    out.append(t)
+            return out
+    return []
+
+
+def collect_tags(roots: list[Root]) -> list[TaggedTool]:
+    """Every tagged tool note across all roots, with its category and description."""
+    out: list[TaggedTool] = []
+    for root in roots:
+        notes_dir = root.notes_dir
+        if not notes_dir.is_dir():
+            continue
+        info = {t.slug: (c.name, t.desc) for c in list_categories(root) for t in c.tools}
+        for path in sorted(notes_dir.glob("*.md")):
+            if path.name == "README.md":
+                continue
+            tags = note_tags(path.read_text())
+            if not tags:
+                continue
+            cat, desc = info.get(path.stem, ("", ""))
+            out.append(
+                TaggedTool(
+                    slug=path.stem, label=root.label, category=cat, desc=desc, tags=tuple(tags)
+                )
+            )
     return out
 
 

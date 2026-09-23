@@ -29,6 +29,8 @@ Follow the shape of `tool-notes/ripgrep.md`:
 
 One-line description: what it replaces or what it does.
 
+**Tags:** tag-one · tag-two · tag-three
+
 ## Cool features
 
 - **Bold headline.** Short sentence explaining the non-obvious capability.
@@ -54,6 +56,8 @@ cmd ...                # next example
 ```
 
 Not every section is mandatory — only `# title` + 1-line description + at least one use-case block. Add `Cool features`, `Habit shifts`, and `Killer flags` when they earn their keep.
+
+The optional `**Tags:**` line sits directly under the description (before the first `##`). Tags are cross-cutting, many-to-many labels — orthogonal to the single category — so `kb tag <tag>` can gather every tool for a job (e.g. `search`) across categories. Keep them lowercase kebab, separated by ` · ` (commas also parse). Reuse existing tags rather than coining near-duplicates; `kb tags` shows the current vocabulary. Categories still follow the one-home rule; tags don't replace them.
 
 ## When the user provides input
 

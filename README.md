@@ -20,9 +20,13 @@ kb find <terms...>     # search every example by command, intent, or section;
 kb list [category]     # categories and the tools under each (or just one);
                        #   -c category names only · -v also show each tool's sections
 kb cats [-v]           # category names only (-v adds tool counts)
+kb tags [-v]           # the tag vocabulary — cross-cutting labels (-v adds counts)
+kb tag <tag...>        # tools carrying a tag (several tags = tools with ALL of them);
+                       #   e.g. `kb tag search` for every search-ish tool, then dig in
 kb sections <tool>     # the section headings inside a tool note
 kb add <tool> ...      # editor-first capture (scaffolds + wires a new tool/category):
                        #   --category C      home for a NEW tool
+                       #   --tags "a,b"      tags for a NEW tool (the **Tags:** line)
                        #   --section "H"      append under an existing section
                        #   --new-section "H"  create a section, then capture
 kb move <tool> <cat>   # recategorize a tool (updates category files + index,
@@ -31,6 +35,17 @@ kb show <tool>         # print a note to the terminal (no editor; alias: cat)
 kb open <tool>         # open a note in $EDITOR
 kb --help              # common tasks + per-subcommand help
 ```
+
+### Tags vs. categories
+
+A tool has exactly one **category** — its home in the three-tier structure. **Tags** are
+orthogonal and many-to-many: cross-cutting labels for "show me every tool I could reach for
+when I'm doing X". `ripgrep` lives in *Search* but is tagged `search · text · files`; `fzf`,
+`fd`, and `atuin` also carry `search`, so `kb tag search` gathers them all regardless of
+category. Tags live on a `**Tags:**` line just under each note's description; `kb` derives the
+whole vocabulary by scanning, so there's nothing to keep in sync. `kb tags` lists the
+vocabulary (counts with `-v`); `kb tag <tag>` lists the tools, showing each one's other tags so
+a query is a jumping-off point.
 
 ### Two repos, one tool
 

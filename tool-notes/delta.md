@@ -3,6 +3,8 @@
 Syntax-highlighted, side-by-side, language-aware git diff viewer. Works as a pager for
 `git diff`, `git show`, `git log -p`, `git stash show -p`, etc.
 
+**Tags:** git · diff · viewer
+
 ## Cool features
 
 - **Side-by-side mode.** Left = old, right = new, instead of `-`/`+` stacked. Easier on big chunks.
@@ -33,6 +35,35 @@ Syntax-highlighted, side-by-side, language-aware git diff viewer. Works as a pag
     # hyperlinks-file-link-format = "vscode://file/{path}:{line}"
 [merge]
     conflictstyle = zdiff3
+```
+
+## Use it directly (outside the pager)
+
+```bash
+delta old.py new.py                       # diff two files without git
+diff -u a.txt b.txt | delta               # pipe any unified diff through it
+diff -ru dirA dirB | delta                # diff two directories
+git diff | delta --side-by-side           # force side-by-side once
+git -c delta.side-by-side=false diff      # force inline once (override config)
+delta --width 120 old new                 # constrain width
+delta --wrap-max-lines 3                  # wrap long lines instead of truncating
+git blame -c app.js | bat -l git          # delta doesn't page blame — use bat instead
+```
+
+## Named feature sets (toggle groups of options)
+
+```gitconfig
+[delta]
+    features = side-by-side line-numbers decorations
+[delta "decorations"]
+    commit-decoration-style = bold yellow box ul
+    file-decoration-style   = none
+[diff]
+    colorMoved = default       # highlight moved-but-unchanged blocks
+```
+
+```bash
+DELTA_FEATURES=+side-by-side git diff     # toggle a feature set per-invocation
 ```
 
 ## Useful in FPOC

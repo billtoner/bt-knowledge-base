@@ -34,6 +34,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [doggo](doggo.md) — modern colorized dig; JSON, DoH/DoT, multi-resolver
 - [eza](eza.md) — modern `ls` replacement with git status, icons, tree mode
 - [fd](fd.md) — `find` replacement; smart-case, gitignore-aware, parallel exec
+- [fzf](fzf.md) — general-purpose fuzzy finder; live-grep, previews, interactive git
 - [gcloud](gcloud.md) — Google Cloud CLI; auth, config, and GCP resources
 - [gh](gh.md) — GitHub from the terminal; PRs, issues, releases, Actions, API
 - [git](git.md) — version control fundamentals
@@ -95,6 +96,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [ssh](ssh.md) — secure shell; remote exec, port forwarding, jump hosts
 - [ssh-add](ssh-add.md) — manage keys in the ssh-agent; macOS Keychain integration
 - [ssh-keygen](ssh-keygen.md) — create/convert/inspect SSH keys; fingerprints, host keys
+- [starship](starship.md) — fast cross-shell prompt; introspection, presets, per-project config
 - [strace](strace.md) — trace syscalls and signals; first 'what is it doing' stop
 - [systemctl](systemctl.md) — control systemd services and units
 - [systemd-analyze](systemd-analyze.md) — boot timing and unit verification for systemd

@@ -2,6 +2,8 @@
 
 Modern `ls` replacement. Maintained fork of the (defunct) `exa`.
 
+**Tags:** files · listing
+
 ## Cool features
 
 - **Git status column.** `eza --git` adds `--`, `-M`, `-N` etc. next to each file showing
@@ -22,6 +24,59 @@ eza -lah --git audiopulse/                       # what changed in audiopulse/ s
 eza --tree --git-ignore audiopulse/calibration   # walk a module visually
 eza -lah --git --sort=newest                     # newest-first listing
 eza -lF                                           # quick ls with dir/exec markers
+```
+
+## Everyday power views
+
+```bash
+eza -la --git --group-directories-first        # long, all, git-status column, dirs first
+eza -la --git --icons --time-style=relative     # "2 hours ago" + filetype icons
+eza -lbGF --color-scale=size                    # shade sizes by magnitude
+```
+
+## Trees (with scoping)
+
+```bash
+eza --tree --level=3 -I '.git|node_modules|__pycache__'   # ignore noise
+eza --tree --long --git --level=2 src                     # tree + git status per file
+eza --tree --git-ignore                                   # respect .gitignore in the tree
+```
+
+## Sorting & sizes
+
+```bash
+eza -l --sort=size --reverse --total-size      # biggest first; real recursive dir sizes
+eza -l --sort=extension                        # group by file type
+eza -l --sort=created --time=created           # by creation time
+eza -l --only-dirs --total-size                # dir sizes leaderboard
+```
+
+`--total-size` computes real recursive directory sizes (slower, but the honest number).
+
+## Filtering
+
+```bash
+eza -l --git-ignore                            # hide gitignored files
+eza -la -I '*.pyc|__pycache__'                 # glob ignore
+eza -lD                                         # directories only
+eza -lf                                         # files only (newer eza)
+```
+
+## Handy aliases (shell rc)
+
+```bash
+alias ls='eza --group-directories-first'
+alias ll='eza -la --git --group-directories-first --icons'
+alias lt='eza --tree --level=2 -I ".git|node_modules"'
+alias lS='eza -l --sort=size --reverse --total-size'
+```
+
+## Clever combos
+
+```bash
+eza -la --git --sort=modified --reverse                    # what changed, newest first
+eza -lD --total-size --sort=size --reverse                 # quick disk-hog scan of the top level
+fd -t d | fzf --preview 'eza -la --git --color=always {}'  # peek a directory as an fzf preview
 ```
 
 ## Habit shifts from ls

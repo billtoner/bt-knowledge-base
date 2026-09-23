@@ -7,10 +7,20 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from .notes import _BULLET_RE, _INDEXABLE_FENCES, _strip_fence
+from .notes import _BULLET_RE, _INDEXABLE_FENCES, TAG_SEP, _strip_fence
 from .roots import Root
 
 TEMPLATE = "command-here            # what it does / why you kept it"
+
+
+def tag_line(tags: list[str]) -> str:
+    """Render a '**Tags:**' line from raw tag strings (kebab-cased, de-duped)."""
+    seen: list[str] = []
+    for t in tags:
+        k = kebab(t)
+        if k and k not in seen:
+            seen.append(k)
+    return f"**Tags:** {TAG_SEP.join(seen)}" if seen else ""
 
 
 class KbError(Exception):
@@ -79,8 +89,14 @@ def add_section(path: Path, heading: str, template: str = TEMPLATE) -> int:
 # ---------------------------------------------------------------------------
 # new notes: scaffold + wire category + index + README
 # ---------------------------------------------------------------------------
-def write_new_note(path: Path, tool: str, desc: str, template: str = TEMPLATE) -> None:
-    path.write_text(f"# {tool}\n\n{desc}\n\n## Examples\n\n```bash\n{template}\n```\n")
+def write_new_note(
+    path: Path, tool: str, desc: str, template: str = TEMPLATE, tags: list[str] | None = None
+) -> None:
+    tl = tag_line(tags or [])
+    head = f"# {tool}\n\n{desc}\n\n"
+    if tl:
+        head += f"{tl}\n\n"
+    path.write_text(f"{head}## Examples\n\n```bash\n{template}\n```\n")
 
 
 def add_category_bullet(

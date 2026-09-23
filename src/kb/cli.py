@@ -35,6 +35,8 @@ _ALIASES = {
     "mv": "move",
     "sec": "sections",
     "cat": "show",
+    "t": "tag",
+    "tg": "tags",
 }
 
 
@@ -62,8 +64,11 @@ def _root() -> None:
     - `kb list [category]` — categories and the tools under each
     - `kb list -c` / `kb cats` — category names only
     - `kb list -v` — tools with each one's sections
+    - `kb tags` — the tag vocabulary (cross-cutting; `-v` for counts)
+    - `kb tag <tag...>` — tools carrying a tag (all tags = intersection)
     - `kb sections <tool>` — a tool's section headings
     - `kb add <tool> --category <C>` — new tool (category created if new)
+    - `kb add <tool> --category <C> --tags "a,b"` — new tool with tags
     - `kb add <tool> --section "<H>"` — append under an existing section
     - `kb add <tool> --new-section "<H>"` — create a section, then capture
     - `kb move <tool> <category>` — recategorize a tool
@@ -220,6 +225,55 @@ def cats(
 
 
 @app.command()
+def tags(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="show tool counts per tag"),
+) -> None:
+    """List the tag vocabulary — the cross-cutting labels you can query with `kb tag`."""
+    roots = _roots()
+    counts: dict[str, int] = {}
+    for tt in notes.collect_tags(roots):
+        for t in tt.tags:
+            counts[t] = counts.get(t, 0) + 1
+    if not counts:
+        typer.echo(f"{INT}(no tags yet — add a **Tags:** line to a note, or `kb add --tags`){RST}")
+        return
+    for name in sorted(counts):
+        if verbose:
+            typer.echo(f"{name}  {INT}({counts[name]}){RST}")
+        else:
+            typer.echo(name)
+
+
+@app.command()
+def tag(
+    tags_: list[str] = typer.Argument(..., help="tag(s); multiple = tools with ALL of them"),
+) -> None:
+    """List tools carrying a tag (pass several tags to intersect them)."""
+    roots = _roots()
+    want = {capture.kebab(t) for t in tags_}
+    hits = [tt for tt in notes.collect_tags(roots) if want <= set(tt.tags)]
+    if not hits:
+        _die(f"no tools tagged {' + '.join(sorted(want))} (try: kb tags)")
+    show_label = len(roots) > 1
+    hits.sort(key=lambda tt: (tt.category, tt.slug))
+    for tt in hits:
+        line = f"  {CMD}{tt.slug}{RST}"
+        if tt.desc:
+            line += f"  {INT}{tt.desc}{RST}"
+        typer.echo(line)
+        loc = "    "
+        if show_label:
+            loc += f"{INT}[{tt.label}]{RST} "
+        loc += f"{SEC}{tt.category or '(uncategorized)'}{RST}"
+        # surface the tool's OTHER tags, so a query is a jumping-off point
+        others = [t for t in tt.tags if t not in want]
+        if others:
+            loc += f"  {INT}·  {' '.join(others)}{RST}"
+        typer.echo(loc)
+    typer.echo(f"{INT}{len(hits)} tool(s) tagged {' + '.join(sorted(want))}.{RST}")
+
+
+@app.command()
 def sections(tool: str = typer.Argument(..., help="tool note whose sections to list")) -> None:
     """List the section headings in a tool note (searches all roots)."""
     for root in _roots():
@@ -264,6 +318,7 @@ def add(
     new_section: str = typer.Option("", "--new-section", help="create this section, then capture"),
     category: str = typer.Option("", "--category", help="category for a NEW tool"),
     desc: str = typer.Option("", "--desc", help="description for a NEW tool's title"),
+    tags: str = typer.Option("", "--tags", help="comma-separated tags for a NEW tool"),
     private: bool = typer.Option(False, "--private", help="write to the private root"),
     repo: str = typer.Option("", "--repo", help="write to the root with this label"),
     dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
@@ -284,6 +339,8 @@ def add(
         return str(Path(p).relative_to(rt.path))
 
     if note.is_file():
+        if tags:
+            _die(f"{tool} already exists — edit its **Tags:** line directly (kb open {tool})")
         if section and new_section:
             _die("pass either --section or --new-section, not both")
         if new_section:
@@ -335,7 +392,8 @@ def add(
         typer.echo(f"  append bullet to {rel(rt.readme)}")
         return
 
-    capture.write_new_note(note, tool, desc)
+    tag_list = [t for t in tags.replace(",", " ").split() if t]
+    capture.write_new_note(note, tool, desc, tags=tag_list)
     created = capture.add_category_bullet(cat_file, category, tool, desc)
     if created:
         capture.wire_index_category(rt.index, category, cat_slug)
@@ -344,7 +402,7 @@ def add(
     typer.echo(f"Scaffolded new tool '{tool}' in category '{category}'.")
     typer.echo(f"  {rel(note)}")
     typer.echo(f"  {rel(cat_file)}")
-    open_at(note, 8)
+    open_at(note, 10 if tag_list else 8)  # land on the template line (tags shift it down)
 
 
 @app.command()

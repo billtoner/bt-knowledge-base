@@ -2,6 +2,8 @@
 
 Replaces zsh's Ctrl-R with a TUI fuzzy-search backed by SQLite. Stores rich metadata per command.
 
+**Tags:** shell · history · search
+
 ## Cool features
 
 - **TUI fuzzy search on Ctrl-R** — type to filter, scroll, Enter to run, Tab to edit before running.
@@ -32,7 +34,24 @@ atuin history list | tail -20                    # last 20 commands
 atuin search 'brew install'                      # search from CLI (no TUI)
 atuin search --filter-mode directory 'just'      # commands in current dir
 atuin stats                                       # fun stats
+atuin stats --count 20                            # top 20; also `atuin stats yesterday`
 atuin update                                      # update atuin itself
+```
+
+## Non-interactive queries (scriptable recall)
+
+The metadata columns (exit code, cwd, time) turn history into a queryable log.
+
+```bash
+atuin search -c npm --limit 5           # last 5 commands starting with npm
+atuin search --exit 0 -c ./deploy       # only SUCCESSFUL deploy runs
+atuin search --exclude-exit 0 -c pytest # only FAILED pytest runs
+atuin search --after "1 week ago" --before yesterday deploy
+atuin search --cwd . -i                 # interactive, scoped to THIS directory
+atuin history list --cwd .              # raw history for this dir
+
+# Re-run the last failed command in this project ( --format prints just the text )
+atuin search --cwd . --exclude-exit 0 --limit 1 --format "{command}"
 ```
 
 ## Privacy escape hatch

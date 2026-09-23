@@ -261,6 +261,91 @@ def test_show_unknown_tool(repo: Root, monkeypatch):
     assert r.exit_code == 1
 
 
+def test_note_tags_parsing():
+    # middot separator, mixed case, and a code fence that must be ignored
+    text = (
+        "# rg\n\ngrep replacement.\n\n"
+        "**Tags:** Search · Text · search\n\n"
+        "```bash\n**Tags:** nope\n```\n"
+    )
+    assert notes.note_tags(text) == ["search", "text"]  # deduped, lowercased, fence skipped
+    # comma separator also works
+    assert notes.note_tags("# x\n\nd\n\n**Tags:** a, b, c\n") == ["a", "b", "c"]
+    # no tag line
+    assert notes.note_tags("# x\n\njust a description\n") == []
+
+
+def test_tag_line_render():
+    assert capture.tag_line(["Search", "modern unix", "search"]) == "**Tags:** search · modern-unix"
+    assert capture.tag_line([]) == ""
+
+
+def _tag_ssh(repo: Root, tags: str = "remote · shell") -> None:
+    """Add a **Tags:** line to the fixture's ssh note."""
+    note = repo.notes_dir / "ssh.md"
+    note.write_text(SSH_NOTE.replace("secure shell.", f"secure shell.\n\n**Tags:** {tags}"))
+
+
+def test_collect_tags(repo: Root):
+    _tag_ssh(repo)
+    tagged = notes.collect_tags([repo])
+    assert len(tagged) == 1
+    tt = tagged[0]
+    assert tt.slug == "ssh"
+    assert tt.category == "Network"
+    assert tt.desc == "secure shell"
+    assert tt.tags == ("remote", "shell")
+
+
+def test_tags_command(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    _tag_ssh(repo)
+    r = runner.invoke(app, ["tags"])
+    assert r.exit_code == 0
+    assert r.output.splitlines() == ["remote", "shell"]
+    rv = runner.invoke(app, ["tags", "-v"])
+    assert "remote  (1)" in rv.output
+
+
+def test_tag_query_and_intersection(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    _tag_ssh(repo)
+    (repo.notes_dir / "mosh.md").write_text("# mosh\n\nroaming shell.\n\n**Tags:** remote\n")
+    single = runner.invoke(app, ["tag", "remote"])
+    assert single.exit_code == 0
+    assert "ssh" in single.output and "mosh" in single.output
+    # intersection: only ssh has both
+    both = runner.invoke(app, ["tag", "remote", "shell"])
+    assert both.exit_code == 0
+    assert "ssh" in both.output and "mosh" not in both.output
+    # case-insensitive / kebab-normalized lookups
+    assert runner.invoke(app, ["tag", "Shell"]).exit_code == 0
+
+
+def test_tag_unknown(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["tag", "nope"])
+    assert r.exit_code == 1
+
+
+def test_add_new_tool_with_tags(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    r = runner.invoke(
+        app,
+        ["add", "fzf", "--category", "Search", "--desc", "fuzzy finder", "--tags", "search, fuzzy"],
+    )
+    assert r.exit_code == 0
+    assert "**Tags:** search · fuzzy" in (repo.notes_dir / "fzf.md").read_text()
+
+
+def test_add_tags_on_existing_errors(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    r = runner.invoke(app, ["add", "ssh", "--tags", "remote"])
+    assert r.exit_code == 1
+
+
 def test_root_for():
     pub = Root("pub", Path("/tmp/pub"))
     priv = Root("private", Path("/tmp/private"))

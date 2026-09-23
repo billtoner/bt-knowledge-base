@@ -2,6 +2,8 @@
 
 Smarter `cd` based on **frecency** (frequency + recency). Learns where you go.
 
+**Tags:** shell · navigation
+
 ## Cool features
 
 - **`z fragment`** jumps to the most-frecent directory matching the fragment, anywhere on the system.
@@ -27,6 +29,24 @@ zi                           # interactive picker — for when you forget the na
 zoxide query -l | head -20   # see your top 20 most-visited dirs
 ```
 
+## Inspect / manage the database
+
+```bash
+zoxide query fret            # print the dir z WOULD jump to (no cd)
+zoxide query -l              # list every known dir
+zoxide query -l -s           # list with scores (see what's ranked highest)
+zoxide add /some/path        # manually seed a directory
+zoxide remove /stale/path    # forget one
+zoxide edit                  # interactively prune the db (newer versions)
+```
+
+## Setup (shell rc)
+
+```bash
+eval "$(zoxide init zsh)"            # adds `z` and `zi` (must be near the END of your rc)
+eval "$(zoxide init zsh --cmd cd)"  # REPLACE cd itself with frecency behavior (`cdi` = picker)
+```
+
 ## Habit shifts from cd
 
 - `cd ../../..` — zoxide doesn't replace these. Use `cd` for relative navigation.
@@ -46,4 +66,7 @@ zoxide query -l | head -20   # see your top 20 most-visited dirs
 z fpoc && rg "TODO" -t py            # jump + immediately search
 z fpoc && just check                  # jump + run the gate
 zi                                     # picker when name escapes you
+$EDITOR "$(zoxide query proj)"        # open a frecent project WITHOUT leaving the current dir
+(cd "$(zoxide query fretsy)" && git status)          # run a command in a frecent dir, in a subshell
+zoxide query -l | fzf --preview 'eza -la --git {}' | xargs -I{} z {}   # peek then jump
 ```
