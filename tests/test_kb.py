@@ -611,6 +611,83 @@ def test_image_command_dry_run_writes_nothing(repo: Root, tmp_path: Path, monkey
     assert not (repo.assets_dir / "ssh").exists()
 
 
+def test_add_new_prose_note_with_image(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "shot.png")
+    r = runner.invoke(app, ["add", "gizmo", "--prose", "--image", str(src)])
+    assert r.exit_code == 0
+    note = (repo.notes_dir / "gizmo.md").read_text()
+    assert capture.PROSE_BODY in note  # scaffolded as prose
+    assert "![gizmo](assets/gizmo/shot.png)" in note  # alt defaults to the note name
+    assert (repo.assets_dir / "gizmo" / "shot.png").is_file()
+    assert "[gizmo]" in repo.readme.read_text()  # still wired into the README
+
+
+def test_add_new_note_with_image_and_category(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "diagram.png")
+    r = runner.invoke(app, ["add", "widget", "--category", "Home", "--image", str(src)])
+    assert r.exit_code == 0
+    assert "![widget](assets/widget/diagram.png)" in (repo.notes_dir / "widget.md").read_text()
+    assert "widget" in (repo.categories_dir / "home.md").read_text()
+
+
+def test_add_image_on_existing_note(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "pic.png")
+    r = runner.invoke(app, ["add", "ssh", "--image", str(src)])
+    assert r.exit_code == 0
+    assert "![ssh](assets/ssh/pic.png)" in (repo.notes_dir / "ssh.md").read_text()
+
+
+def test_add_image_on_existing_note_under_section(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "pic.png")
+    r = runner.invoke(app, ["add", "ssh", "--image", str(src), "--section", "Forwarding"])
+    assert r.exit_code == 0
+    lines = (repo.notes_dir / "ssh.md").read_text().splitlines()
+    img = lines.index("![ssh](assets/ssh/pic.png)")
+    assert lines.index("## Jump hosts") > img  # landed inside Forwarding
+
+
+def test_add_image_missing_file_errors(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    r = runner.invoke(app, ["add", "gizmo", "--prose", "--image", "/no/such.png"])
+    assert r.exit_code == 1
+    assert not (repo.notes_dir / "gizmo.md").exists()  # nothing scaffolded on bad image
+
+
+def test_add_image_with_new_section_errors(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path)
+    r = runner.invoke(app, ["add", "ssh", "--image", str(src), "--new-section", "Pics"])
+    assert r.exit_code == 1
+
+
+def test_add_image_bad_section_errors(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path)
+    r = runner.invoke(app, ["add", "ssh", "--image", str(src), "--section", "Nope"])
+    assert r.exit_code == 1
+
+
+def test_add_new_image_dry_run_writes_nothing(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path)
+    r = runner.invoke(app, ["add", "gizmo", "--prose", "--image", str(src), "--dry-run"])
+    assert r.exit_code == 0 and "DRY-RUN" in r.output and "pic.png" in r.output
+    assert not (repo.notes_dir / "gizmo.md").exists()
+    assert not (repo.assets_dir / "gizmo").exists()
+
+
 def test_delete_removes_assets(repo: Root, tmp_path: Path, monkeypatch):
     monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
     capture.copy_image(repo, "ssh", _make_image(tmp_path))

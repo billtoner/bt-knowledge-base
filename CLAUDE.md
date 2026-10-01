@@ -87,7 +87,9 @@ A note can carry images. They live in `tool-notes/assets/<note-slug>/` (one dir 
 note), linked from the note with a relative Markdown link: `![alt](assets/<slug>/file.png)`.
 `kb image <note> <path>` (alias `img`) does the whole thing — copies the file in
 (deduping name clashes), creates the dir, and inserts the link at the end of the note or,
-with `--section "H"`, at the end of that section. `kb delete` removes a note's
+with `--section "H"`, at the end of that section. To start a brand-new entry from just an
+image, `kb add <name> --prose --image <path>` scaffolds the note and attaches the image in
+one step (alt defaults to the note name), then opens the editor to add context. `kb delete` removes a note's
 `assets/<slug>/` dir along with the note. The links render under `grip . --browser`
 (relative paths resolve when the whole repo is served); `kb show` prints the link text,
 not the image. Don't hand-place images elsewhere — keep them under `assets/<slug>/` so the

@@ -380,11 +380,17 @@ def add(
     desc: str = typer.Option("", "--desc", help="description for a NEW note's title"),
     tags: str = typer.Option("", "--tags", help="comma-separated tags for a NEW note"),
     prose: bool = typer.Option(False, "--prose", help="scaffold a plain prose note (no bash)"),
+    image: Path = typer.Option(None, "--image", help="attach an image (copy in + link it)"),
     private: bool = typer.Option(False, "--private", help="write to the private root"),
     repo: str = typer.Option("", "--repo", help="write to the root with this label"),
     dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
 ) -> None:
-    """Editor-first capture; scaffolds + wires a new tool/category."""
+    """Editor-first capture; scaffolds + wires a new tool/category.
+
+    With --image, attach an image too: on a new note the image is copied in and
+    linked before the editor opens (great for an entry that's mostly a picture);
+    on an existing note it just copies + links (like `kb image`).
+    """
     roots = _roots()
     sel = "private" if private else repo
     rt = root_for(roots, sel)
@@ -399,7 +405,29 @@ def add(
     def rel(p) -> str:
         return str(Path(p).relative_to(rt.path))
 
+    src = image.expanduser() if image is not None else None
+    if src is not None and not src.is_file():
+        _die(f"no such image file: {image}")
+
     if note.is_file():
+        if src is not None:  # attach-only: existing note + an image
+            if new_section:
+                _die("--image can't be combined with --new-section (use --section)")
+            if section and section not in notes.list_sections(note.read_text()):
+                _die(f"no section '{section}' in {tool} (try `kb sections {tool}`, or drop it)")
+            md = capture.image_markdown(f"assets/{tool}/{src.name}", tool)
+            if dry_run:
+                where = f"under '{section}'" if section else "at the end of the note"
+                typer.echo(f"DRY-RUN: attach image to existing note {tool}:")
+                typer.echo(f"  copy {_tilde(src)} → {rel(rt.assets_dir / tool)}/{src.name}")
+                typer.echo(f"  insert {md} {where}")
+                return
+            dest, link = capture.copy_image(rt, tool, src)
+            line = capture.append_image(note, capture.image_markdown(link, tool), section)
+            typer.echo(f"Added image to {tool} ({rel(note)}:{line}).")
+            typer.echo(f"  {rel(dest)}")
+            open_at(note, line)
+            return
         if tags:
             _die(f"{tool} already exists — edit its **Tags:** line directly (kb open {tool})")
         if section and new_section:
@@ -449,6 +477,8 @@ def add(
         else:
             typer.echo(f"  create  {rel(cat_file)} (H1: {category}) + link it in {rel(rt.index)}")
         typer.echo(f"  append bullet to {rel(rt.readme)}")
+        if src is not None:
+            typer.echo(f"  copy {_tilde(src)} → {rel(rt.assets_dir / tool)}/{src.name} + link it")
         return
 
     tag_list = [t for t in tags.replace(",", " ").split() if t]
@@ -466,6 +496,10 @@ def add(
             f"Scaffolded '{tool}' (uncategorized — file it later with: kb move {tool} <cat>)."
         )
     typer.echo(f"  {rel(note)}")
+    if src is not None:  # append the image link to the fresh scaffold (land is unshifted)
+        dest, link = capture.copy_image(rt, tool, src)
+        capture.append_image(note, capture.image_markdown(link, tool))
+        typer.echo(f"  {rel(dest)}")
     open_at(note, land)
 
 

@@ -27,6 +27,7 @@ kb sections <name>     # the section headings inside a note
 kb add <name> ...      # editor-first capture (scaffolds + wires a new note):
                        #   --category C      home for the note (OPTIONAL; else uncategorized)
                        #   --prose           plain prose note (no bash block) — for any thought
+                       #   --image PATH      attach an image — copy it in + link it (new or existing note)
                        #   --tags "a,b"      tags (the **Tags:** line)
                        #   --section "H"      append under an existing section
                        #   --new-section "H"  create a section, then capture
@@ -57,6 +58,8 @@ a query is a jumping-off point.
 
 `kb image <note> <file>` copies an image into `tool-notes/assets/<note>/` and drops
 an `![alt](assets/<note>/file)` link into the note (at the end, or under `--section`).
+Starting from just an image? `kb add <name> --prose --image <file>` scaffolds the note
+*and* attaches the image in one step, then drops you in the editor to add context.
 Deleting the note with `kb delete` also removes its `assets/<note>/` dir. The links
 render inline under `grip . --browser` (where relative paths resolve); `kb show`
 renders in the terminal, so it prints the link text rather than the picture.
