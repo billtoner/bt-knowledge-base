@@ -59,6 +59,19 @@ whole vocabulary by scanning, so there's nothing to keep in sync. `kb tags` list
 vocabulary (counts with `-v`); `kb tag <tag>` lists the tools, showing each one's other tags so
 a query is a jumping-off point.
 
+As the base grew past CLI tools into life domains (home, taxes, writing, …), two conventions
+keep it coherent:
+
+- **Categories are broad subject shelves, kept coarse.** Each life domain is *one* category
+  (`Home & Repairs`, not `Plumbing`/`Electrical`); split a domain only once it genuinely
+  overflows — the same discipline as the "no empty categories" rule. Domains can be reserved
+  ahead of use as plain-text placeholders in the index; the first `kb add --category` into one
+  turns the placeholder into a link and creates its category file.
+- **Projects and contexts are tags, not categories.** A reusable note keeps its subject home
+  (a Postgres trick stays in *Databases*) and carries a project tag like `fretsy` or `book`, so
+  `kb tag fretsy` gathers everything for an app — or `kb tag book` all your book research —
+  across every category.
+
 ### Images and file attachments
 
 `kb image <note> <file>` copies an image into `tool-notes/assets/<note>/` and drops
