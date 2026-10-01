@@ -135,6 +135,40 @@ def test_add_readme_bullet_alpha(repo: Root):
     assert readme.index("[curl]") < readme.index("[ssh]")
 
 
+def test_note_desc():
+    assert notes.note_desc("# ssh\n\nsecure shell.\n") == "secure shell."
+    # skips the tags line
+    assert notes.note_desc("# x\n\nthe desc.\n\n**Tags:** a · b\n") == "the desc."
+    # a note with only a title has no description
+    assert notes.note_desc("# bare\n") == ""
+
+
+def test_list_uncategorized(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["list", "-u"])
+    assert r.exit_code == 0
+    # the fixture's 'orphan' note is uncategorized; 'ssh' is filed under Network
+    assert "orphan" in r.output
+    assert "ssh" not in r.output
+    assert "1 uncategorized" in r.output
+
+
+def test_list_uncategorized_shows_desc(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    (repo.notes_dir / "shower-idea.md").write_text("# shower-idea\n\na great idea.\n")
+    r = runner.invoke(app, ["list", "--uncategorized"])
+    assert r.exit_code == 0
+    assert "a great idea." in r.output  # description surfaced next to the name
+
+
+def test_list_uncategorized_none(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    (repo.notes_dir / "orphan.md").unlink()  # the only orphan in the fixture
+    r = runner.invoke(app, ["list", "-u"])
+    assert r.exit_code == 0
+    assert "nothing uncategorized" in r.output
+
+
 def test_list_categories_flag_matches_cats(repo: Root, monkeypatch):
     monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
     flag = runner.invoke(app, ["list", "--categories"])

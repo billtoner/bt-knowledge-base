@@ -68,6 +68,7 @@ def _root() -> None:
     - `kb find <terms>` — search every note: shell examples AND prose body
     - `kb list [category]` — categories and the tools under each
     - `kb list -c` / `kb cats` — category names only
+    - `kb list -u` — only notes not filed in any category
     - `kb list -v` — tools with each one's sections
     - `kb tags` — the tag vocabulary (cross-cutting; `-v` for counts)
     - `kb tag <tag...>` — tools carrying a tag (all tags = intersection)
@@ -186,6 +187,31 @@ def _emit_categories(roots: list[Root], verbose: bool = False) -> None:
                 typer.echo(c.name)
 
 
+def _emit_uncategorized(roots: list[Root]) -> None:
+    """Print only the notes not filed in any category (shared by `list -u`)."""
+    multi = len(roots) > 1
+    total = 0
+    for root in roots:
+        orphans = notes.orphan_tools(root, notes.list_categories(root))
+        if multi:
+            typer.echo(f"{PATH}[{root.label}]{RST}")
+        if not orphans:
+            typer.echo(f"  {INT}(none){RST}")
+            continue
+        for slug in orphans:
+            total += 1
+            note = root.notes_dir / f"{slug}.md"
+            desc = notes.note_desc(note.read_text()) if note.is_file() else ""
+            if desc:
+                typer.echo(f"  {slug}  {INT}{desc}{RST}")
+            else:
+                typer.echo(f"  {slug}")
+    if total:
+        typer.echo(f"{INT}{total} uncategorized — file one with: kb move <name> <category>{RST}")
+    else:
+        typer.echo(f"{INT}nothing uncategorized.{RST}")
+
+
 # ---------------------------------------------------------------------------
 @app.command()
 def find(terms: list[str] = typer.Argument(..., help="search terms")) -> None:
@@ -226,9 +252,15 @@ def list_cmd(
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="show each tool's sections (or counts with -c)"
     ),
+    uncategorized: bool = typer.Option(
+        False, "--uncategorized", "-u", help="show only notes not filed in any category"
+    ),
 ) -> None:
     """List categories and the tools under each; pass a category to show just that one."""
     roots = _roots()
+    if uncategorized:
+        _emit_uncategorized(roots)
+        return
     if categories:
         _emit_categories(roots, verbose)
         return

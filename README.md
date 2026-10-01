@@ -19,6 +19,7 @@ kb find <terms...>     # search EVERY note — shell examples AND prose body;
                        #   command matches rank first; prints snippet + file:line
 kb list [category]     # categories and the entries under each (or just one);
                        #   -c category names only · -v also show each note's sections
+                       #   -u ONLY the uncategorized notes (what still needs filing)
 kb cats [-v]           # category names only (-v adds counts)
 kb tags [-v]           # the tag vocabulary — cross-cutting labels (-v adds counts)
 kb tag <tag...>        # entries carrying a tag (several tags = entries with ALL of them);

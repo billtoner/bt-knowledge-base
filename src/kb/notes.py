@@ -131,6 +131,29 @@ def note_tags(text: str) -> list[str]:
     return []
 
 
+def note_desc(text: str) -> str:
+    """The one-line description under a note's title (the first body line after the
+    `# title`, skipping the `**Tags:**` line and code fences); '' if there is none."""
+    in_block = False
+    title_seen = False
+    for line in text.splitlines():
+        if line.startswith("```"):
+            in_block = not in_block
+            continue
+        if in_block:
+            continue
+        s = line.strip()
+        if not s:
+            continue
+        if line.startswith("# ") and not title_seen:
+            title_seen = True
+            continue
+        if not title_seen or _TAGS_RE.match(s) or s.startswith("#"):
+            continue
+        return s
+    return ""
+
+
 def collect_tags(roots: list[Root]) -> list[TaggedTool]:
     """Every tagged tool note across all roots, with its category and description."""
     out: list[TaggedTool] = []
