@@ -662,7 +662,10 @@ def move(
     repo: str = typer.Option("", "--repo", help="operate on the root with this label"),
     dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
 ) -> None:
-    """Move a tool from its current category to another (wiring/unwiring the index)."""
+    """File a note into a category, or move it between categories (wiring the index).
+
+    Works on an uncategorized note too — that's how you file an orphan (see `kb list -u`).
+    """
     roots = _roots()
     sel = "private" if private else repo
     rt = root_for(roots, sel)
@@ -670,14 +673,32 @@ def move(
         labels = ", ".join(r.label for r in roots)
         _die(f"no {sel or 'default'} repo configured (roots: {labels})")
 
-    hit = notes.find_tool_category(rt, tool)
-    if hit is None:
-        _die(f"{tool} isn't in any category in the {rt.label} repo (try: kb find {tool})")
-    old_cat, ref = hit
     target_slug = capture.kebab(category)
 
     def rel(p) -> str:
         return str(Path(p).relative_to(rt.path))
+
+    hit = notes.find_tool_category(rt, tool)
+    if hit is None:  # uncategorized: file the orphan (or it isn't a note at all)
+        note = rt.notes_dir / f"{tool}.md"
+        if not note.is_file():
+            _die(f"{tool} isn't a note in the {rt.label} repo (try: kb find {tool})")
+        new_cat_file = rt.categories_dir / f"{target_slug}.md"
+        desc = notes.note_desc(note.read_text())
+        if dry_run:
+            typer.echo(f"DRY-RUN: file {tool} (uncategorized) → {category}")
+            if new_cat_file.exists():
+                typer.echo(f"  append bullet to {rel(new_cat_file)}")
+            else:
+                typer.echo(f"  create {rel(new_cat_file)} + link it in {rel(rt.index)}")
+            return
+        created = capture.add_category_bullet(new_cat_file, category, tool, desc)
+        if created:
+            capture.wire_index_category(rt.index, category, target_slug)
+        typer.echo(f"Filed {tool} → {category} (was uncategorized).")
+        return
+
+    old_cat, ref = hit
 
     if old_cat.slug == target_slug:
         typer.echo(f"{tool} is already in {old_cat.name}.")

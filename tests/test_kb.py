@@ -214,6 +214,34 @@ def test_move_keeps_nonempty_source(repo: Root, monkeypatch):
     assert "scp" in (repo.categories_dir / "network.md").read_text()
 
 
+def test_move_files_orphan(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    # the fixture's 'orphan' note is uncategorized; filing it creates the category
+    r = runner.invoke(app, ["move", "orphan", "Software Tools"])
+    assert r.exit_code == 0
+    assert "was uncategorized" in r.output
+    cat = repo.categories_dir / "software-tools.md"
+    assert cat.exists()
+    assert "- [orphan](../../tool-notes/orphan.md)" in cat.read_text()
+    assert "software-tools.md" in repo.index.read_text()  # wired into the index
+    # no longer an orphan
+    assert notes.find_tool_category(repo, "orphan") is not None
+
+
+def test_move_orphan_dry_run_writes_nothing(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["move", "orphan", "Software Tools", "--dry-run"])
+    assert r.exit_code == 0 and "DRY-RUN" in r.output
+    assert not (repo.categories_dir / "software-tools.md").exists()
+
+
+def test_move_nonexistent_note_errors(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    # no note file at all (not just uncategorized) -> error
+    r = runner.invoke(app, ["move", "ghost", "Network"])
+    assert r.exit_code == 1
+
+
 def test_move_already_there(repo: Root, monkeypatch):
     monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
     r = runner.invoke(app, ["move", "ssh", "Network"])

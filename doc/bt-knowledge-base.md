@@ -63,6 +63,7 @@ tool() {
 - [Search](categories/search.md)
 - [Security & Secrets](categories/security-secrets.md)
 - [Shell & Terminal](categories/shell-terminal.md)
+- [Software Tools](categories/software-tools.md)
 - [System & Services](categories/system-services.md)
 - [Text & Data Processing](categories/text-data-processing.md)
 - [Version Control](categories/version-control.md)
