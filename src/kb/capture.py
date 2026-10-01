@@ -114,8 +114,24 @@ def copy_image(root: Root, tool: str, src: Path) -> tuple[Path, str]:
     return target, f"assets/{tool}/{target.name}"
 
 
+# File extensions that render as an inline image (`![]()`); everything else is
+# linked as a plain `[]()` so a PDF/doc opens or downloads instead of breaking.
+IMAGE_EXTS = frozenset(
+    {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp", ".avif",
+     ".heic", ".heif", ".ico", ".tif", ".tiff"}
+)  # fmt: skip
+
+
+def is_image(path: Path) -> bool:
+    return path.suffix.lower() in IMAGE_EXTS
+
+
 def image_markdown(link: str, alt: str) -> str:
     return f"![{alt}]({link})"
+
+
+def link_markdown(link: str, label: str) -> str:
+    return f"[{label}]({link})"
 
 
 def append_image(path: Path, markdown: str, section: str = "") -> int:

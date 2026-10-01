@@ -27,7 +27,8 @@ kb sections <name>     # the section headings inside a note
 kb add <name> ...      # editor-first capture (scaffolds + wires a new note):
                        #   --category C      home for the note (OPTIONAL; else uncategorized)
                        #   --prose           plain prose note (no bash block) — for any thought
-                       #   --image PATH      attach an image — copy it in + link it (new or existing note)
+                       #   --image PATH      attach an image — copy it in + embed it (new or existing note)
+                       #   --attach PATH     attach any file (PDF, doc, …) — copy it in + link it
                        #   --tags "a,b"      tags (the **Tags:** line)
                        #   --section "H"      append under an existing section
                        #   --new-section "H"  create a section, then capture
@@ -35,6 +36,10 @@ kb open <name>         # open a note in $EDITOR — this is how you EDIT an entr
 kb image <name> <path> # copy an image into the note's assets dir + link it (alias: img):
                        #   --section "H"     place the image under an existing section
                        #   --alt "text"      alt text (defaults to the file name)
+kb attach <name> <path> # copy ANY file (PDF, Word, …) into assets + link it (alias: att):
+                       #   images embed (![](…)); other files get a [filename](…) link
+                       #   --section "H"     place the link under an existing section
+                       #   --label "text"    link text (defaults to the file name)
 kb move <name> <cat>   # (re)categorize a note (updates category files + index)
 kb delete <name>       # delete a note + unwire it (alias: rm; -y to skip confirm)
 kb show <name>         # print a note (renders via glow/bat + pages via $PAGER
@@ -54,15 +59,21 @@ whole vocabulary by scanning, so there's nothing to keep in sync. `kb tags` list
 vocabulary (counts with `-v`); `kb tag <tag>` lists the tools, showing each one's other tags so
 a query is a jumping-off point.
 
-### Images
+### Images and file attachments
 
 `kb image <note> <file>` copies an image into `tool-notes/assets/<note>/` and drops
-an `![alt](assets/<note>/file)` link into the note (at the end, or under `--section`).
-Starting from just an image? `kb add <name> --prose --image <file>` scaffolds the note
-*and* attaches the image in one step, then drops you in the editor to add context.
-Deleting the note with `kb delete` also removes its `assets/<note>/` dir. The links
-render inline under `grip . --browser` (where relative paths resolve); `kb show`
-renders in the terminal, so it prints the link text rather than the picture.
+an `![alt](assets/<note>/file)` embed into the note (at the end, or under `--section`).
+For non-image files — a PDF, a Word doc — use `kb attach <note> <file>` instead: it
+copies the file the same way but inserts a plain `[filename](assets/<note>/file)` link
+(a browser can't render a document inside an `![]()` embed). `kb attach` handles images
+too (it embeds them), so it's the one verb if you don't want to think about the type;
+`kb image` just refuses a non-image and points you here.
+
+Starting from just a file? `kb add <name> --prose --image <file>` (or `--attach <file>`)
+scaffolds the note *and* attaches it in one step, then drops you in the editor to add
+context. Deleting the note with `kb delete` also removes its `assets/<note>/` dir. Links
+render under `grip . --browser` (where relative paths resolve); `kb show` renders in the
+terminal, so it prints the link text rather than the picture.
 
 ### Two repos, one tool
 

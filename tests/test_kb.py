@@ -688,6 +688,127 @@ def test_add_new_image_dry_run_writes_nothing(repo: Root, tmp_path: Path, monkey
     assert not (repo.assets_dir / "gizmo").exists()
 
 
+# --- attach (any file) -----------------------------------------------------
+
+
+def test_is_image():
+    assert capture.is_image(Path("x.png")) and capture.is_image(Path("X.JPG"))
+    assert not capture.is_image(Path("report.pdf"))
+    assert not capture.is_image(Path("notes.docx"))
+
+
+def test_link_markdown():
+    assert capture.link_markdown("assets/x/r.pdf", "r.pdf") == "[r.pdf](assets/x/r.pdf)"
+
+
+def test_attach_document_uses_link(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "report.pdf", b"%PDF-1.4")
+    r = runner.invoke(app, ["attach", "ssh", str(src)])
+    assert r.exit_code == 0
+    note = (repo.notes_dir / "ssh.md").read_text()
+    assert "[report.pdf](assets/ssh/report.pdf)" in note  # plain link, not an embed
+    assert "![report.pdf]" not in note
+    assert (repo.assets_dir / "ssh" / "report.pdf").is_file()
+
+
+def test_attach_image_still_embeds(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "shot.png")
+    r = runner.invoke(app, ["attach", "ssh", str(src)])
+    assert r.exit_code == 0
+    assert "![shot](assets/ssh/shot.png)" in (repo.notes_dir / "ssh.md").read_text()
+
+
+def test_attach_alias_and_label(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "lease.docx", b"PK")
+    r = runner.invoke(app, ["att", "ssh", str(src), "--label", "the lease"])
+    assert r.exit_code == 0
+    assert "[the lease](assets/ssh/lease.docx)" in (repo.notes_dir / "ssh.md").read_text()
+
+
+def test_attach_under_section(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "doc.pdf", b"%PDF")
+    r = runner.invoke(app, ["attach", "ssh", str(src), "--section", "Forwarding"])
+    assert r.exit_code == 0
+    lines = (repo.notes_dir / "ssh.md").read_text().splitlines()
+    assert lines.index("[doc.pdf](assets/ssh/doc.pdf)") < lines.index("## Jump hosts")
+
+
+def test_attach_dry_run_writes_nothing(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    before = (repo.notes_dir / "ssh.md").read_text()
+    src = _make_image(tmp_path, "report.pdf", b"%PDF")
+    r = runner.invoke(app, ["attach", "ssh", str(src), "--dry-run"])
+    assert r.exit_code == 0 and "DRY-RUN" in r.output
+    assert "[report.pdf](assets/ssh/report.pdf)" in r.output
+    assert (repo.notes_dir / "ssh.md").read_text() == before
+    assert not (repo.assets_dir / "ssh").exists()
+
+
+def test_attach_unknown_note(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    src = _make_image(tmp_path, "x.pdf")
+    assert runner.invoke(app, ["attach", "nope", str(src)]).exit_code == 1
+
+
+def test_attach_missing_file(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    assert runner.invoke(app, ["attach", "ssh", "/no/such.pdf"]).exit_code == 1
+
+
+def test_image_command_rejects_non_image(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    src = _make_image(tmp_path, "report.pdf", b"%PDF")
+    r = runner.invoke(app, ["image", "ssh", str(src)])
+    assert r.exit_code == 1
+    assert "attach" in r.output.lower()  # points the user at kb attach
+
+
+def test_add_attach_document_new_note(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "lease.pdf", b"%PDF")
+    r = runner.invoke(app, ["add", "contract", "--prose", "--attach", str(src)])
+    assert r.exit_code == 0
+    note = (repo.notes_dir / "contract.md").read_text()
+    assert "[lease.pdf](assets/contract/lease.pdf)" in note
+    assert "![" not in note  # a document, not an embed
+
+
+def test_add_attach_on_existing_note(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "spec.pdf", b"%PDF")
+    r = runner.invoke(app, ["add", "ssh", "--attach", str(src)])
+    assert r.exit_code == 0
+    assert "[spec.pdf](assets/ssh/spec.pdf)" in (repo.notes_dir / "ssh.md").read_text()
+
+
+def test_add_image_rejects_document(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    src = _make_image(tmp_path, "report.pdf", b"%PDF")
+    r = runner.invoke(app, ["add", "gizmo", "--prose", "--image", str(src)])
+    assert r.exit_code == 1
+    assert not (repo.notes_dir / "gizmo.md").exists()
+
+
+def test_add_image_and_attach_conflict(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    monkeypatch.setenv("EDITOR", "true")
+    img = _make_image(tmp_path, "a.png")
+    doc = _make_image(tmp_path, "b.pdf", b"%PDF")
+    r = runner.invoke(app, ["add", "x", "--prose", "--image", str(img), "--attach", str(doc)])
+    assert r.exit_code == 1
+
+
 def test_delete_removes_assets(repo: Root, tmp_path: Path, monkeypatch):
     monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
     capture.copy_image(repo, "ssh", _make_image(tmp_path))

@@ -34,6 +34,7 @@ _ALIASES = {
     "categories": "cats",
     "o": "open",
     "img": "image",
+    "att": "attach",
     "mv": "move",
     "sec": "sections",
     "cat": "show",
@@ -76,6 +77,7 @@ def _root() -> None:
     - `kb add <tool> --section "<H>"` — append under an existing section
     - `kb add <tool> --new-section "<H>"` — create a section, then capture
     - `kb image <note> <path>` — copy an image in and link it (alias: img)
+    - `kb attach <note> <path>` — copy any file (PDF, doc, …) in and link it (alias: att)
     - `kb move <tool> <category>` — (re)categorize a note
     - `kb delete <name>` — delete a note and unwire it (alias: rm)
     - `kb show <tool>` — print a note to the terminal (no editor)
@@ -381,15 +383,17 @@ def add(
     tags: str = typer.Option("", "--tags", help="comma-separated tags for a NEW note"),
     prose: bool = typer.Option(False, "--prose", help="scaffold a plain prose note (no bash)"),
     image: Path = typer.Option(None, "--image", help="attach an image (copy in + link it)"),
+    attach: Path = typer.Option(None, "--attach", help="attach any file (PDF/doc/…): copy + link"),
     private: bool = typer.Option(False, "--private", help="write to the private root"),
     repo: str = typer.Option("", "--repo", help="write to the root with this label"),
     dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
 ) -> None:
     """Editor-first capture; scaffolds + wires a new tool/category.
 
-    With --image, attach an image too: on a new note the image is copied in and
-    linked before the editor opens (great for an entry that's mostly a picture);
-    on an existing note it just copies + links (like `kb image`).
+    With --image (or --attach for any file: PDF, doc, …) the file is copied in and
+    linked too: on a new note before the editor opens (great for an entry that's
+    mostly a picture or a document); on an existing note it just copies + links
+    (like `kb image` / `kb attach`).
     """
     roots = _roots()
     sel = "private" if private else repo
@@ -405,26 +409,35 @@ def add(
     def rel(p) -> str:
         return str(Path(p).relative_to(rt.path))
 
-    src = image.expanduser() if image is not None else None
+    if image is not None and attach is not None:
+        _die("pass either --image or --attach, not both")
+    raw = image if image is not None else attach
+    src = raw.expanduser() if raw is not None else None
     if src is not None and not src.is_file():
-        _die(f"no such image file: {image}")
+        _die(f"no such file: {raw}")
+    if image is not None and src is not None and not capture.is_image(src):
+        _die(f"{src.name} isn't an image — use --attach to link a document")
+    # Images embed (and label with the note name); other files get a [filename] link.
+    embed = src is not None and (image is not None or capture.is_image(src))
+    att_label = (tool if embed else src.name) if src is not None else ""
+    att_md = capture.image_markdown if embed else capture.link_markdown
 
     if note.is_file():
-        if src is not None:  # attach-only: existing note + an image
+        if src is not None:  # attach-only: existing note + a file
             if new_section:
-                _die("--image can't be combined with --new-section (use --section)")
+                _die("--image/--attach can't be combined with --new-section (use --section)")
             if section and section not in notes.list_sections(note.read_text()):
                 _die(f"no section '{section}' in {tool} (try `kb sections {tool}`, or drop it)")
-            md = capture.image_markdown(f"assets/{tool}/{src.name}", tool)
+            md = att_md(f"assets/{tool}/{src.name}", att_label)
             if dry_run:
                 where = f"under '{section}'" if section else "at the end of the note"
-                typer.echo(f"DRY-RUN: attach image to existing note {tool}:")
+                typer.echo(f"DRY-RUN: attach {src.name} to existing note {tool}:")
                 typer.echo(f"  copy {_tilde(src)} → {rel(rt.assets_dir / tool)}/{src.name}")
                 typer.echo(f"  insert {md} {where}")
                 return
             dest, link = capture.copy_image(rt, tool, src)
-            line = capture.append_image(note, capture.image_markdown(link, tool), section)
-            typer.echo(f"Added image to {tool} ({rel(note)}:{line}).")
+            line = capture.append_image(note, att_md(link, att_label), section)
+            typer.echo(f"Attached {src.name} to {tool} ({rel(note)}:{line}).")
             typer.echo(f"  {rel(dest)}")
             open_at(note, line)
             return
@@ -496,9 +509,9 @@ def add(
             f"Scaffolded '{tool}' (uncategorized — file it later with: kb move {tool} <cat>)."
         )
     typer.echo(f"  {rel(note)}")
-    if src is not None:  # append the image link to the fresh scaffold (land is unshifted)
+    if src is not None:  # append the link to the fresh scaffold (land is unshifted)
         dest, link = capture.copy_image(rt, tool, src)
-        capture.append_image(note, capture.image_markdown(link, tool))
+        capture.append_image(note, att_md(link, att_label))
         typer.echo(f"  {rel(dest)}")
     open_at(note, land)
 
@@ -531,6 +544,8 @@ def image_cmd(
     src = path.expanduser()
     if not src.is_file():
         _die(f"no such image file: {path}")
+    if not capture.is_image(src):
+        _die(f"{src.name} isn't an image — use `kb attach` to link a document")
     if section and section not in notes.list_sections(note.read_text()):
         _die(f"no section '{section}' in {tool} (try: kb sections {tool}, or drop --section)")
     alt_text = alt or src.stem
@@ -550,6 +565,60 @@ def image_cmd(
     dest, link = capture.copy_image(rt, tool, src)
     line = capture.append_image(note, capture.image_markdown(link, alt_text), section)
     typer.echo(f"Added image to {tool} ({rel(note)}:{line}).")
+    typer.echo(f"  {rel(dest)}")
+
+
+@app.command("attach")
+def attach_cmd(
+    tool: str = typer.Argument(..., help="note to attach the file to"),
+    path: Path = typer.Argument(..., help="file to copy in (PDF, doc, image, …)"),
+    section: str = typer.Option("", "--section", help="place the link under this section"),
+    label: str = typer.Option("", "--label", help="link text (defaults to the file name)"),
+    private: bool = typer.Option(False, "--private", help="operate on the private root"),
+    repo: str = typer.Option("", "--repo", help="operate on the root with this label"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
+) -> None:
+    """Copy any file into a note's assets dir and link it (alias: att).
+
+    The file lands in tool-notes/assets/<note>/. Images embed as `![](…)` so they
+    render; other files (PDF, Word, …) get a `[filename](…)` link — appended to the
+    end of the note, or under --section.
+    """
+    roots = _roots()
+    sel = "private" if private else repo
+    rt = root_for(roots, sel)
+    if rt is None:
+        labels = ", ".join(r.label for r in roots)
+        _die(f"no {sel or 'default'} repo configured (roots: {labels})")
+
+    note = rt.notes_dir / f"{tool}.md"
+    if not note.is_file():
+        _die(f"no note '{tool}' in the {rt.label} repo (create it first: kb add {tool})")
+    src = path.expanduser()
+    if not src.is_file():
+        _die(f"no such file: {path}")
+    if section and section not in notes.list_sections(note.read_text()):
+        _die(f"no section '{section}' in {tool} (try: kb sections {tool}, or drop --section)")
+
+    embed = capture.is_image(src)
+    text = label or (src.stem if embed else src.name)
+    make_md = capture.image_markdown if embed else capture.link_markdown
+
+    def rel(p) -> str:
+        return str(Path(p).relative_to(rt.path))
+
+    if dry_run:
+        where = f"under '{section}'" if section else "at the end of the note"
+        kind = "image" if embed else "file"
+        typer.echo(f"DRY-RUN: attach {kind} to {tool}:")
+        typer.echo(f"  copy {_tilde(src)} → {rel(rt.assets_dir / tool)}/{src.name}")
+        typer.echo(f"  insert {make_md(f'assets/{tool}/{src.name}', text)} {where}")
+        return
+
+    typer.echo(f"{SEC}→ {rt.label} repo:{RST} {_tilde(rt.path)}")
+    dest, link = capture.copy_image(rt, tool, src)
+    line = capture.append_image(note, make_md(link, text), section)
+    typer.echo(f"Attached {src.name} to {tool} ({rel(note)}:{line}).")
     typer.echo(f"  {rel(dest)}")
 
 

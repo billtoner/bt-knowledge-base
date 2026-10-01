@@ -81,19 +81,26 @@ once the note grows enough to need them.
 
 `kb add <name> --prose` scaffolds exactly this (and `--category` is optional). Keep the title short and kebab-case — it's the filename slug *and* a search signal (`kb find` matches the title, so a word in the title makes the note findable even if the body doesn't repeat it). Everything else is freeform; the only rule is that the body is real content, not a template.
 
-## Images in a note
+## Images and attachments in a note
 
-A note can carry images. They live in `tool-notes/assets/<note-slug>/` (one dir per
-note), linked from the note with a relative Markdown link: `![alt](assets/<slug>/file.png)`.
-`kb image <note> <path>` (alias `img`) does the whole thing — copies the file in
-(deduping name clashes), creates the dir, and inserts the link at the end of the note or,
-with `--section "H"`, at the end of that section. To start a brand-new entry from just an
-image, `kb add <name> --prose --image <path>` scaffolds the note and attaches the image in
-one step (alt defaults to the note name), then opens the editor to add context. `kb delete` removes a note's
-`assets/<slug>/` dir along with the note. The links render under `grip . --browser`
-(relative paths resolve when the whole repo is served); `kb show` prints the link text,
-not the image. Don't hand-place images elsewhere — keep them under `assets/<slug>/` so the
-delete cleanup and the convention hold.
+A note can carry files — images and documents alike. They live in
+`tool-notes/assets/<note-slug>/` (one dir per note), referenced from the note with a
+relative Markdown link. Images embed (`![alt](assets/<slug>/pic.png)`); other files (PDF,
+Word, …) get a plain link (`[report.pdf](assets/<slug>/report.pdf)`), because a browser
+can't render a document inside an `![]()` embed.
+
+- `kb attach <note> <path>` (alias `att`) — the general verb: copies any file in and picks
+  the embed-vs-link form by extension. `kb image <note> <path>` (alias `img`) is the
+  image-only variant (it refuses a non-image and points at `kb attach`).
+- Both create the assets dir, dedupe name clashes, and insert the link at the end of the
+  note or, with `--section "H"`, at the end of that section.
+- To start a brand-new entry from just a file: `kb add <name> --prose --attach <path>`
+  (or `--image <path>`) scaffolds the note, attaches the file, then opens the editor.
+- `kb delete` removes a note's `assets/<slug>/` dir along with the note.
+
+Links render under `grip . --browser` (relative paths resolve when the whole repo is
+served); `kb show` prints the link text in the terminal, not the picture. Don't hand-place
+files elsewhere — keep them under `assets/<slug>/` so the delete cleanup and the convention hold.
 
 ## When the user provides input
 
