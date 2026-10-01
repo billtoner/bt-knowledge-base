@@ -25,6 +25,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [broot](broot.md) — interactive tree navigator; fuzzy search + actions
 - [cron](cron.md) — scheduled jobs; crontab syntax + systemd-timer equivalents
 - [curl](curl.md) — HTTP(S) client; headers, methods, multipart, debug tracing
+- [davinci-resolve](davinci-resolve.md) — split-screen + color-managed video workflow (GUI; no CLI)
 - [db-browser-for-sqlite](db-browser-for-sqlite.md) — GUI for inspecting and editing SQLite databases
 - [delta](delta.md) — syntax-highlighted, side-by-side git diff viewer
 - [df](df.md) — filesystem free space (df) and per-directory usage (du)
