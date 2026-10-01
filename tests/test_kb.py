@@ -492,6 +492,143 @@ def test_remove_readme_bullet(repo: Root):
     assert capture.remove_readme_bullet(repo, "ssh") is False  # already gone
 
 
+# --- images ---------------------------------------------------------------
+
+
+def _make_image(tmp_path: Path, name: str = "pic.png", data: bytes = b"PNG-1") -> Path:
+    p = tmp_path / name
+    p.write_bytes(data)
+    return p
+
+
+def test_copy_image_lands_in_assets(repo: Root, tmp_path: Path):
+    src = _make_image(tmp_path)
+    dest, link = capture.copy_image(repo, "ssh", src)
+    assert dest == repo.assets_dir / "ssh" / "pic.png"
+    assert dest.read_bytes() == b"PNG-1"
+    assert link == "assets/ssh/pic.png"
+
+
+def test_copy_image_reuses_identical(repo: Root, tmp_path: Path):
+    src = _make_image(tmp_path)
+    first, _ = capture.copy_image(repo, "ssh", src)
+    second, link = capture.copy_image(repo, "ssh", src)  # same bytes, same name
+    assert second == first  # reused, not duplicated
+    assert link == "assets/ssh/pic.png"
+    assert list((repo.assets_dir / "ssh").iterdir()) == [first]
+
+
+def test_copy_image_dedupes_name_clash(repo: Root, tmp_path: Path):
+    # same filename, different bytes — kept under subdirs so both can be "pic.png"
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    a = _make_image(tmp_path / "a", "pic.png", b"AAA")
+    b = _make_image(tmp_path / "b", "pic.png", b"BBB")
+    d1, _ = capture.copy_image(repo, "ssh", a)
+    d2, l2 = capture.copy_image(repo, "ssh", b)
+    assert d1.name == "pic.png" and d2.name == "pic-1.png"
+    assert l2 == "assets/ssh/pic-1.png"
+
+
+def test_image_markdown():
+    assert (
+        capture.image_markdown("assets/ssh/pic.png", "a diagram")
+        == "![a diagram](assets/ssh/pic.png)"
+    )
+
+
+def test_append_image_at_end(repo: Root):
+    note = repo.notes_dir / "ssh.md"
+    line = capture.append_image(note, "![x](assets/ssh/x.png)")
+    lines = note.read_text().splitlines()
+    assert lines[line - 1] == "![x](assets/ssh/x.png)"
+    assert lines[line - 2] == ""  # blank line before it
+    assert line == len(lines)  # appended at the end
+
+
+def test_append_image_under_section(repo: Root):
+    note = repo.notes_dir / "ssh.md"
+    line = capture.append_image(note, "![x](assets/ssh/x.png)", section="Forwarding")
+    lines = note.read_text().splitlines()
+    assert lines[line - 1] == "![x](assets/ssh/x.png)"
+    # it sits inside Forwarding, i.e. before the next "## Jump hosts" heading
+    assert lines.index("## Jump hosts") > line - 1
+    assert lines.index("## Jump hosts") > lines.index("## Forwarding")
+
+
+def test_remove_assets(repo: Root, tmp_path: Path):
+    capture.copy_image(repo, "ssh", _make_image(tmp_path))
+    assert (repo.assets_dir / "ssh").is_dir()
+    assert capture.remove_assets(repo, "ssh") is True
+    assert not (repo.assets_dir / "ssh").exists()
+    assert capture.remove_assets(repo, "ssh") is False  # already gone
+
+
+def test_image_command(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    src = _make_image(tmp_path, "diagram.png")
+    r = runner.invoke(app, ["image", "ssh", str(src)])
+    assert r.exit_code == 0
+    assert (repo.assets_dir / "ssh" / "diagram.png").is_file()
+    assert "![diagram](assets/ssh/diagram.png)" in (repo.notes_dir / "ssh.md").read_text()
+
+
+def test_image_command_alias_and_alt(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    src = _make_image(tmp_path, "diagram.png")
+    r = runner.invoke(app, ["img", "ssh", str(src), "--alt", "wiring"])
+    assert r.exit_code == 0
+    assert "![wiring](assets/ssh/diagram.png)" in (repo.notes_dir / "ssh.md").read_text()
+
+
+def test_image_command_unknown_note(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    src = _make_image(tmp_path)
+    r = runner.invoke(app, ["image", "nope", str(src)])
+    assert r.exit_code == 1
+
+
+def test_image_command_missing_file(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    r = runner.invoke(app, ["image", "ssh", "/no/such/file.png"])
+    assert r.exit_code == 1
+
+
+def test_image_command_bad_section(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    src = _make_image(tmp_path)
+    r = runner.invoke(app, ["image", "ssh", str(src), "--section", "Nonexistent"])
+    assert r.exit_code == 1
+
+
+def test_image_command_dry_run_writes_nothing(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    before = (repo.notes_dir / "ssh.md").read_text()
+    src = _make_image(tmp_path)
+    r = runner.invoke(app, ["image", "ssh", str(src), "--dry-run"])
+    assert r.exit_code == 0 and "DRY-RUN" in r.output
+    assert (repo.notes_dir / "ssh.md").read_text() == before
+    assert not (repo.assets_dir / "ssh").exists()
+
+
+def test_delete_removes_assets(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    capture.copy_image(repo, "ssh", _make_image(tmp_path))
+    assert (repo.assets_dir / "ssh").is_dir()
+    r = runner.invoke(app, ["delete", "ssh", "-y"])
+    assert r.exit_code == 0
+    assert not (repo.assets_dir / "ssh").exists()
+
+
+def test_delete_dry_run_mentions_assets(repo: Root, tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    capture.copy_image(repo, "ssh", _make_image(tmp_path))
+    r = runner.invoke(app, ["delete", "ssh", "--dry-run"])
+    assert r.exit_code == 0
+    assert "attached images" in r.output
+    assert (repo.assets_dir / "ssh").is_dir()  # dry-run left it
+
+
 def test_root_for():
     pub = Root("pub", Path("/tmp/pub"))
     priv = Root("private", Path("/tmp/private"))

@@ -5,9 +5,10 @@ tiers, and insert ready-to-fill template lines into existing notes.
 from __future__ import annotations
 
 import re
+import shutil
 from pathlib import Path
 
-from .notes import _BULLET_RE, _INDEXABLE_FENCES, TAG_SEP, _strip_fence
+from .notes import _BULLET_RE, _INDEXABLE_FENCES, _SECTION_RE, TAG_SEP, _strip_fence
 from .roots import Root
 
 TEMPLATE = "command-here            # what it does / why you kept it"
@@ -73,6 +74,86 @@ def insert_template(path: Path, insert_line: int, template: str = TEMPLATE) -> N
     lines = path.read_text().splitlines(keepends=True)
     lines.insert(insert_line - 1, template + "\n")
     path.write_text("".join(lines))
+
+
+# ---------------------------------------------------------------------------
+# images: copy into the note's assets dir + insert a markdown link
+# ---------------------------------------------------------------------------
+def _same_bytes(a: Path, b: Path) -> bool:
+    try:
+        return a.read_bytes() == b.read_bytes()
+    except OSError:
+        return False
+
+
+def _unique_path(p: Path) -> Path:
+    """`p` if free, else `p-1`, `p-2`, … (suffix bumped before the extension)."""
+    if not p.exists():
+        return p
+    i = 1
+    while True:
+        cand = p.with_name(f"{p.stem}-{i}{p.suffix}")
+        if not cand.exists():
+            return cand
+        i += 1
+
+
+def copy_image(root: Root, tool: str, src: Path) -> tuple[Path, str]:
+    """Copy `src` into tool-notes/assets/<tool>/, returning (dest, note-relative link).
+
+    An identical file already there is reused (no copy); a name clash with
+    different content gets a `-1`/`-2` suffix so nothing is clobbered.
+    """
+    dest_dir = root.assets_dir / tool
+    target = dest_dir / src.name
+    if target.exists() and _same_bytes(target, src):
+        return target, f"assets/{tool}/{target.name}"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    target = _unique_path(target)
+    shutil.copy2(src, target)
+    return target, f"assets/{tool}/{target.name}"
+
+
+def image_markdown(link: str, alt: str) -> str:
+    return f"![{alt}]({link})"
+
+
+def append_image(path: Path, markdown: str, section: str = "") -> int:
+    """Insert an image line into a note — at the end of `section` if given (its
+    caller validates the section exists), otherwise at the end of the file.
+    Returns the 1-based line number of the inserted image line."""
+    lines = path.read_text().splitlines()
+    insert = len(lines)
+    if section:
+        want = section.strip().lower()
+        in_block = found = False
+        for i, line in enumerate(lines):
+            if line.startswith("```"):
+                in_block = not in_block
+                continue
+            if in_block:
+                continue
+            m = _SECTION_RE.match(line)
+            if m and not found and m.group(1).strip().lower() == want:
+                found = True
+                continue
+            if m and found:  # next heading ends the section
+                insert = i
+                break
+    while insert > 0 and lines[insert - 1].strip() == "":  # trim trailing blanks
+        insert -= 1
+    lines[insert:insert] = ["", markdown]
+    path.write_text("\n".join(lines).rstrip("\n") + "\n")
+    return insert + 2  # the markdown line, after the inserted blank
+
+
+def remove_assets(root: Root, tool: str) -> bool:
+    """Delete a note's assets dir (tool-notes/assets/<tool>/). True if it existed."""
+    d = root.assets_dir / tool
+    if d.is_dir():
+        shutil.rmtree(d)
+        return True
+    return False
 
 
 def add_section(path: Path, heading: str, template: str = TEMPLATE) -> int:

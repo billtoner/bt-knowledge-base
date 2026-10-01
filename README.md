@@ -31,6 +31,9 @@ kb add <name> ...      # editor-first capture (scaffolds + wires a new note):
                        #   --section "H"      append under an existing section
                        #   --new-section "H"  create a section, then capture
 kb open <name>         # open a note in $EDITOR — this is how you EDIT an entry
+kb image <name> <path> # copy an image into the note's assets dir + link it (alias: img):
+                       #   --section "H"     place the image under an existing section
+                       #   --alt "text"      alt text (defaults to the file name)
 kb move <name> <cat>   # (re)categorize a note (updates category files + index)
 kb delete <name>       # delete a note + unwire it (alias: rm; -y to skip confirm)
 kb show <name>         # print a note (renders via glow/bat + pages via $PAGER
@@ -49,6 +52,14 @@ category. Tags live on a `**Tags:**` line just under each note's description; `k
 whole vocabulary by scanning, so there's nothing to keep in sync. `kb tags` lists the
 vocabulary (counts with `-v`); `kb tag <tag>` lists the tools, showing each one's other tags so
 a query is a jumping-off point.
+
+### Images
+
+`kb image <note> <file>` copies an image into `tool-notes/assets/<note>/` and drops
+an `![alt](assets/<note>/file)` link into the note (at the end, or under `--section`).
+Deleting the note with `kb delete` also removes its `assets/<note>/` dir. The links
+render inline under `grip . --browser` (where relative paths resolve); `kb show`
+renders in the terminal, so it prints the link text rather than the picture.
 
 ### Two repos, one tool
 

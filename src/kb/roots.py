@@ -27,6 +27,11 @@ class Root:
         return self.path / "tool-notes"
 
     @property
+    def assets_dir(self) -> Path:
+        """Where a note's images live: tool-notes/assets/<note>/."""
+        return self.notes_dir / "assets"
+
+    @property
     def categories_dir(self) -> Path:
         return self.path / "doc" / "categories"
 

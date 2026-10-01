@@ -81,6 +81,18 @@ once the note grows enough to need them.
 
 `kb add <name> --prose` scaffolds exactly this (and `--category` is optional). Keep the title short and kebab-case — it's the filename slug *and* a search signal (`kb find` matches the title, so a word in the title makes the note findable even if the body doesn't repeat it). Everything else is freeform; the only rule is that the body is real content, not a template.
 
+## Images in a note
+
+A note can carry images. They live in `tool-notes/assets/<note-slug>/` (one dir per
+note), linked from the note with a relative Markdown link: `![alt](assets/<slug>/file.png)`.
+`kb image <note> <path>` (alias `img`) does the whole thing — copies the file in
+(deduping name clashes), creates the dir, and inserts the link at the end of the note or,
+with `--section "H"`, at the end of that section. `kb delete` removes a note's
+`assets/<slug>/` dir along with the note. The links render under `grip . --browser`
+(relative paths resolve when the whole repo is served); `kb show` prints the link text,
+not the image. Don't hand-place images elsewhere — keep them under `assets/<slug>/` so the
+delete cleanup and the convention hold.
+
 ## When the user provides input
 
 - **He pastes examples** (from a file, a past terminal session, a message): treat his examples as the source of truth. Keep his exact commands; group by use case; add light annotations only if intent isn't obvious.

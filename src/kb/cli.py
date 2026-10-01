@@ -33,6 +33,7 @@ _ALIASES = {
     "c": "cats",
     "categories": "cats",
     "o": "open",
+    "img": "image",
     "mv": "move",
     "sec": "sections",
     "cat": "show",
@@ -74,6 +75,7 @@ def _root() -> None:
     - `kb add <name> --prose` — new plain prose note (no bash block)
     - `kb add <tool> --section "<H>"` — append under an existing section
     - `kb add <tool> --new-section "<H>"` — create a section, then capture
+    - `kb image <note> <path>` — copy an image in and link it (alias: img)
     - `kb move <tool> <category>` — (re)categorize a note
     - `kb delete <name>` — delete a note and unwire it (alias: rm)
     - `kb show <tool>` — print a note to the terminal (no editor)
@@ -467,6 +469,56 @@ def add(
     open_at(note, land)
 
 
+@app.command("image")
+def image_cmd(
+    tool: str = typer.Argument(..., help="note to attach the image to"),
+    path: Path = typer.Argument(..., help="image file to copy in"),
+    section: str = typer.Option("", "--section", help="place the image under this section"),
+    alt: str = typer.Option("", "--alt", help="alt text (defaults to the file name)"),
+    private: bool = typer.Option(False, "--private", help="operate on the private root"),
+    repo: str = typer.Option("", "--repo", help="operate on the root with this label"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="print planned changes"),
+) -> None:
+    """Copy an image into a note's assets dir and insert a Markdown link (alias: img).
+
+    The file lands in tool-notes/assets/<note>/ and the note gets an
+    `![alt](assets/<note>/<file>)` link — appended to the end, or under --section.
+    """
+    roots = _roots()
+    sel = "private" if private else repo
+    rt = root_for(roots, sel)
+    if rt is None:
+        labels = ", ".join(r.label for r in roots)
+        _die(f"no {sel or 'default'} repo configured (roots: {labels})")
+
+    note = rt.notes_dir / f"{tool}.md"
+    if not note.is_file():
+        _die(f"no note '{tool}' in the {rt.label} repo (create it first: kb add {tool})")
+    src = path.expanduser()
+    if not src.is_file():
+        _die(f"no such image file: {path}")
+    if section and section not in notes.list_sections(note.read_text()):
+        _die(f"no section '{section}' in {tool} (try: kb sections {tool}, or drop --section)")
+    alt_text = alt or src.stem
+
+    def rel(p) -> str:
+        return str(Path(p).relative_to(rt.path))
+
+    if dry_run:
+        link = f"assets/{tool}/{src.name}"
+        where = f"under '{section}'" if section else "at the end of the note"
+        typer.echo(f"DRY-RUN: attach image to {tool}:")
+        typer.echo(f"  copy {_tilde(src)} → {rel(rt.assets_dir / tool)}/{src.name}")
+        typer.echo(f"  insert {capture.image_markdown(link, alt_text)} {where}")
+        return
+
+    typer.echo(f"{SEC}→ {rt.label} repo:{RST} {_tilde(rt.path)}")
+    dest, link = capture.copy_image(rt, tool, src)
+    line = capture.append_image(note, capture.image_markdown(link, alt_text), section)
+    typer.echo(f"Added image to {tool} ({rel(note)}:{line}).")
+    typer.echo(f"  {rel(dest)}")
+
+
 @app.command()
 def move(
     tool: str = typer.Argument(..., help="tool note to move"),
@@ -553,6 +605,8 @@ def delete(
     if dry_run:
         typer.echo(f"DRY-RUN: delete {tool} from the {rt.label} repo:")
         typer.echo(f"  remove {rel(note)}")
+        if (rt.assets_dir / tool).is_dir():
+            typer.echo(f"  remove {rel(rt.assets_dir / tool)}/ (attached images)")
         if old_cat is not None:
             typer.echo(f"  remove bullet from {rel(old_cat.file)}")
             if empties:
@@ -567,6 +621,8 @@ def delete(
         raise typer.Exit(1)
 
     note.unlink()
+    if capture.remove_assets(rt, tool):
+        typer.echo(f"  removed {rel(rt.assets_dir / tool)}/")
     capture.remove_readme_bullet(rt, tool)
     if old_cat is not None:
         if capture.remove_category_bullet(old_cat.file, tool):
