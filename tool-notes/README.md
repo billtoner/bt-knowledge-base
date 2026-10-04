@@ -86,6 +86,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [pulumi](pulumi.md) — IaC in real languages; stacks, config, encrypted secrets
 - [py-spy](py-spy.md) — sampling profiler for running Python processes
 - [qsv](qsv.md) — fast CSV toolkit; slice, stats, join, frequency, search
+- [remote-shell-iphone-to-mac](remote-shell-iphone-to-mac.md) — SSH into the MacBook from an iPhone — same-Wi-Fi or from anywhere via Tailscale.
 - [ripgrep](ripgrep.md) — `grep` replacement; recursive, smart-case, gitignore-aware
 - [sar](sar.md) — historical + live system stats (sar; dstat for live)
 - [scp](scp.md) — copy files over SSH; uses `~/.ssh/config` aliases
