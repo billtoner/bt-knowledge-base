@@ -25,7 +25,9 @@ pass init <gpg-fingerprint-or-email>    # creates ~/.password-store
 ```bash
 pass                                    # tree of all entries
 pass show personal/gmail                # print plaintext (first decrypt → passphrase dialog)
-pass -c personal/gmail                  # copy to clipboard (auto-clears ~45s)
+pass -c personal/gmail                  # copy line 1 (the password) to clipboard (auto-clears ~45s)
+pass -c2 personal/gmail                 # copy line 2 (e.g. the username) — -cN copies the Nth line
+pass personal/gmail | sed -n 's/^login: //p'   # extract a named field by script
 pass insert personal/gmail              # add interactively (hidden input)
 pass insert -m aws/root                 # multiline: password line 1, user/url/notes below
 pass generate personal/wifi 24          # generate + store a 24-char password
@@ -34,7 +36,27 @@ pass rm personal/gmail                  # delete an entry
 pass grep PATTERN                       # search decrypted contents
 ```
 
-Convention: **first line = the password** (that's what `-c` copies); put `user:`, `url:`, notes on the lines below.
+Convention: **first line = the password** (that's what `-c` copies); put `user:`, `url:`, notes on the lines below. `pass -c2` then copies the username.
+
+## Store more than passwords
+
+Entries are arbitrary text, so `pass` holds any secret — API tokens, keys, codes:
+
+```bash
+pass insert -m api/openai                     # paste the token (+ notes), Ctrl-D
+export OPENAI_API_KEY="$(pass show api/openai | head -1)"   # into the env, never hardcoded
+
+pass insert -m ssh/id_ed25519 < ~/.ssh/id_ed25519          # store a text key file (stdin)
+pass show ssh/id_ed25519 > ~/.ssh/id_ed25519               # restore it
+chmod 600 ~/.ssh/id_ed25519
+
+base64 -i secret.bin | pass insert -m notes/secret-b64     # binary secret → base64 first
+pass show notes/secret-b64 | base64 -d > secret.bin        # restore
+```
+
+Organize the tree so it's not just logins: `personal/` (user+pass) · `api/` (tokens) ·
+`aws/` (keys) · `ssh/` · `notes/` (recovery codes, licenses, wifi). `pass insert -m aws/personal`
+creates the folder automatically; `pass find <term>` searches entry names.
 
 ## Back up the key — it's the single point of failure
 
@@ -51,6 +73,7 @@ gpg --export-secret-keys --armor <fpr> > pwkey-private.asc   # store OFFLINE / i
 ## Killer flags
 
 - `-c` — copy to clipboard instead of printing (auto-clears)
+- `-cN` — copy the Nth line (e.g. `-c2` for the username)
 - `-m` — multiline insert (password + metadata)
 - `generate -n` — no symbols in the generated password
 - `-f` — force (skip the overwrite / delete prompt)
