@@ -64,6 +64,26 @@ def test_orphans(repo: Root):
     assert notes.orphan_tools(repo, cats) == ["orphan"]
 
 
+def test_list_placeholders(repo: Root):
+    # Add two plain-text (placeholder) bullets alongside the Network link.
+    repo.index.write_text(repo.index.read_text() + "- Recipes\n- Home Projects\n")
+    # Link bullets are live categories, not placeholders; plain text ones are.
+    assert notes.list_placeholders(repo) == ["Recipes", "Home Projects"]
+
+
+def test_list_placeholders_none(repo: Root):
+    assert notes.list_placeholders(repo) == []
+
+
+def test_cats_placeholders_flag(repo: Root, monkeypatch):
+    monkeypatch.setenv("KB_ROOTS", f"{repo.label}={repo.path}")
+    repo.index.write_text(repo.index.read_text() + "- Recipes\n")
+    plain = runner.invoke(app, ["cats"])
+    assert "Recipes" not in plain.output  # hidden by default
+    flagged = runner.invoke(app, ["cats", "-p"])
+    assert "Recipes  " in flagged.output and "placeholder" in flagged.output
+
+
 def test_find_command_rank(repo: Root):
     res = notes.find([repo], ["ssh"])
     # two command lines (rank 2) + the description prose line (rank 0, via the title)

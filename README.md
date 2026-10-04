@@ -20,7 +20,7 @@ kb find <terms...>     # search EVERY note — shell examples AND prose body;
 kb list [category]     # categories and the entries under each (or just one);
                        #   -c category names only · -v also show each note's sections
                        #   -u ONLY the uncategorized notes (what still needs filing)
-kb cats [-v]           # category names only (-v adds counts)
+kb cats [-v]           # category names only (-v adds counts · -p also lists reserved placeholders)
 kb tags [-v]           # the tag vocabulary — cross-cutting labels (-v adds counts)
 kb tag <tag...>        # entries carrying a tag (several tags = entries with ALL of them);
                        #   e.g. `kb tag search` for every search-ish tool, then dig in
@@ -46,6 +46,10 @@ kb delete <name>       # delete a note + unwire it (alias: rm; -y to skip confir
 kb show <name>         # print a note (renders via glow/bat + pages via $PAGER
                        #   when interactive; raw+unpaged when piped or --raw;
                        #   --no-pager for inline; alias: cat)
+kb sync                # stage + commit + push EVERY root in one go
+                       #   -m "msg" custom message · --repo L only that root
+                       #   --no-push commit only · --dry-run preview · skips a
+                       #   git-crypt repo that's still locked (unlock first)
 kb --help              # common tasks + per-subcommand help
 ```
 

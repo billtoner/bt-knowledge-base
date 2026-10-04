@@ -92,6 +92,30 @@ def list_categories(root: Root) -> list[Category]:
     return [parse_category(p) for p in sorted(cat_dir.glob("*.md"))]
 
 
+# A plain-text (non-link) bullet under the index's `## Categories` heading.
+_PLACEHOLDER_RE = re.compile(r"^- (?P<name>(?!\[).+?)\s*$")
+
+
+def list_placeholders(root: Root) -> list[str]:
+    """Reserved-but-empty category names: plain-text bullets under the index's
+    `## Categories` heading that aren't links (so have no category file yet)."""
+    index = root.index
+    if not index.is_file():
+        return []
+    out: list[str] = []
+    in_cats = False
+    for raw in index.read_text().splitlines():
+        if raw.startswith("## "):
+            in_cats = raw[3:].strip().lower() == "categories"
+            continue
+        if not in_cats:
+            continue
+        m = _PLACEHOLDER_RE.match(raw)
+        if m:
+            out.append(m.group("name").strip())
+    return out
+
+
 def list_sections(text: str) -> list[str]:
     """The '## heading' section titles in a note (ignoring headings inside fences)."""
     out: list[str] = []

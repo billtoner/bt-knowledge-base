@@ -7,6 +7,7 @@ tool-notes/*.md under the three-tier structure (see CLAUDE.md).
 
 from __future__ import annotations
 
+import datetime
 import os
 import shlex
 import shutil
@@ -83,6 +84,7 @@ def _root() -> None:
     - `kb delete <name>` — delete a note and unwire it (alias: rm)
     - `kb show <tool>` — print a note to the terminal (no editor)
     - `kb open <tool>` — open a note in $EDITOR (this is how you *edit*)
+    - `kb sync` — stage + commit + push every KB repo (skips a locked git-crypt repo)
     """
 
 
@@ -170,14 +172,18 @@ def open_at(path: Path, line: int) -> None:
     subprocess.run(cmd)
 
 
-def _emit_categories(roots: list[Root], verbose: bool = False) -> None:
-    """Print category names only (shared by `cats` and `list --categories`)."""
+def _emit_categories(roots: list[Root], verbose: bool = False, placeholders: bool = False) -> None:
+    """Print category names only (shared by `cats` and `list --categories`).
+
+    With `placeholders`, also list reserved-but-empty categories from the index
+    (plain-text bullets with no category file yet), flagged as placeholders."""
     multi = len(roots) > 1
     for root in roots:
         cats_ = notes.list_categories(root)
+        holds = notes.list_placeholders(root) if placeholders else []
         if multi:
             typer.echo(f"{PATH}[{root.label}]{RST}")
-        if not cats_:
+        if not cats_ and not holds:
             typer.echo(f"  {INT}(no categories yet){RST}")
             continue
         for c in cats_:
@@ -185,6 +191,8 @@ def _emit_categories(roots: list[Root], verbose: bool = False) -> None:
                 typer.echo(f"{c.name}  {INT}({len(c.tools)}){RST}")
             else:
                 typer.echo(c.name)
+        for name in holds:
+            typer.echo(f"{name}  {INT}(placeholder){RST}")
 
 
 def _emit_uncategorized(roots: list[Root]) -> None:
@@ -304,9 +312,12 @@ def list_cmd(
 @app.command()
 def cats(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="show tool counts"),
+    placeholders: bool = typer.Option(
+        False, "--placeholders", "-p", help="also list reserved-but-empty categories from the index"
+    ),
 ) -> None:
     """List category names only (the high-level buckets)."""
-    _emit_categories(_roots(), verbose)
+    _emit_categories(_roots(), verbose, placeholders)
 
 
 @app.command()
@@ -789,6 +800,126 @@ def delete(
             typer.echo(f"Deleted {tool} from {old_cat.name}.")
     else:
         typer.echo(f"Deleted {tool} (was uncategorized).")
+
+
+def _git(repo: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["git", "-C", str(repo), *args], capture_output=True, text=True, check=check
+    )
+
+
+def _git_crypt_locked(repo: Path) -> bool | None:
+    """True if the repo uses git-crypt and is currently LOCKED (working tree holds
+    ciphertext), False if it uses git-crypt and is unlocked, None if it doesn't use
+    git-crypt at all. A locked repo must not be committed — you'd stage unreadable
+    blobs and the smudge filter never ran."""
+    ga = repo / ".gitattributes"
+    if not ga.is_file() or "git-crypt" not in ga.read_text(errors="ignore"):
+        return None
+    try:
+        tracked = _git(repo, "ls-files", "-z").stdout.split("\0")
+    except (subprocess.SubprocessError, OSError):
+        return None
+    for name in tracked:
+        # Only files git-crypt actually encrypts (see the repo's .gitattributes).
+        if not (name.startswith("tool-notes/") or name.startswith("doc/")):
+            continue
+        f = repo / name
+        try:
+            if f.is_file() and f.stat().st_size >= 10:
+                # git-crypt prefixes a locked file with a 0x00 "GITCRYPT" magic header.
+                return f.read_bytes()[:9] == b"\x00GITCRYPT"
+        except OSError:
+            continue
+    return False  # uses git-crypt, but nothing encrypted to check — treat as safe
+
+
+@app.command()
+def sync(
+    message: str = typer.Option(
+        "", "-m", "--message", help="commit message (default: timestamped)"
+    ),
+    repo: str = typer.Option("", "--repo", help="only this root (label); default: every root"),
+    push: bool = typer.Option(
+        True, "--push/--no-push", help="push after committing (default: push)"
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="print planned actions, change nothing"),
+) -> None:
+    """Stage, commit, and push each KB repo (every root by default).
+
+    Skips a repo with nothing to commit, and *refuses* a git-crypt repo that's still
+    locked — so you never commit unreadable ciphertext by accident. Unlock first with
+    `git -C <repo> ... git-crypt unlock`, then re-run.
+    """
+    roots = _roots()
+    if repo:
+        rt = root_for(roots, repo)
+        if rt is None:
+            _die(f"no root labelled '{repo}' (roots: {', '.join(r.label for r in roots)})")
+        roots = [rt]
+
+    msg = message or f"kb sync: {datetime.datetime.now():%Y-%m-%d %H:%M}"
+    failed = False
+
+    for rt in roots:
+        path = rt.path
+        typer.echo(f"{SEC}→ {rt.label}{RST}  {_tilde(path)}")
+
+        if not (path / ".git").exists():
+            typer.echo(f"  {INT}not a git repo — skipped{RST}")
+            continue
+
+        if _git_crypt_locked(path):
+            typer.echo(f"  {INT}git-crypt LOCKED — skipped (unlock it first, then re-run){RST}")
+            failed = True
+            continue
+
+        status = _git(path, "status", "--porcelain", check=False)
+        if status.returncode != 0:
+            typer.echo(f"  {INT}git status failed — skipped{RST}")
+            failed = True
+            continue
+
+        dirty = bool(status.stdout.strip())
+        committed_now = False
+        if dirty:
+            n = len(status.stdout.strip().splitlines())
+            if dry_run:
+                typer.echo(f'  {INT}DRY-RUN: stage + commit {n} change(s) → "{msg}"{RST}')
+            else:
+                _git(path, "add", "-A")
+                c = _git(path, "commit", "-m", msg, check=False)
+                if c.returncode != 0:
+                    detail = (c.stderr or c.stdout).strip().splitlines()
+                    typer.echo(f"  {INT}commit failed: {detail[-1] if detail else '?'}{RST}")
+                    failed = True
+                    continue
+                typer.echo(f"  committed {n} change(s): {msg}")
+                committed_now = True
+        else:
+            typer.echo(f"  {INT}clean — nothing to commit{RST}")
+
+        if not push:
+            continue
+        ahead = _git(path, "rev-list", "--count", "@{u}..HEAD", check=False)
+        unpushed = ahead.returncode == 0 and ahead.stdout.strip() not in ("", "0")
+        pending = committed_now or (dry_run and dirty)
+        if not pending and not unpushed and ahead.returncode == 0:
+            typer.echo(f"  {INT}up to date with origin{RST}")
+            continue
+        if dry_run:
+            typer.echo(f"  {INT}DRY-RUN: push → origin{RST}")
+            continue
+        p = _git(path, "push", check=False)
+        if p.returncode != 0:
+            detail = (p.stderr or p.stdout).strip().splitlines()
+            typer.echo(f"  {INT}push failed: {detail[-1] if detail else '?'}{RST}")
+            failed = True
+        else:
+            typer.echo("  pushed → origin")
+
+    if failed:
+        raise typer.Exit(1)
 
 
 def main() -> None:
