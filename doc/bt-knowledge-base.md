@@ -40,6 +40,7 @@ tool() {
 
 - [Archiving](categories/archiving.md)
 - [Build & Packaging](categories/build-packaging.md)
+- [Claude Code](categories/claude-code.md)
 - [Cloud CLIs](categories/cloud-clis.md)
 - [Containers & Orchestration](categories/containers-orchestration.md)
 - [Databases](categories/databases.md)
