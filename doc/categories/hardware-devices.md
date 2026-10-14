@@ -9,3 +9,4 @@ Inspecting and controlling USB, Bluetooth, and audio devices.
 - [lspci](../../tool-notes/lspci.md) — list PCI devices; drivers, IDs, topology
 - [lscpu](../../tool-notes/lscpu.md) — CPU architecture, topology, caches, flags
 - [sensors](../../tool-notes/sensors.md) — hardware temps, fans, voltages (lm-sensors)
+- [lp](../../tool-notes/lp.md) — print files from the command line via CUPS (lp/lpr/lpstat)

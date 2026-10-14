@@ -62,6 +62,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [just](just.md) — modern command runner; like make, but for tasks
 - [kubectl](kubectl.md) — Kubernetes control-plane CLI: query and manage cluster resources
 - [lazygit](lazygit.md) — full-screen TUI for git operations
+- [lp](lp.md) — print files from the command line via CUPS (lp/lpr/lpstat)
 - [lsblk](lsblk.md) — block devices, partitions, mounts, sizes as a tree
 - [lscpu](lscpu.md) — CPU architecture, topology, caches, flags
 - [lsof](lsof.md) — list open files: ports, sockets, locked mounts, deleted-but-open files
@@ -107,7 +108,10 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [terraform](terraform.md) — provision infrastructure as code; plan, apply, state, workspaces
 - [terragrunt](terragrunt.md) — keep Terraform DRY across envs; remote state, module wiring
 - [tig](tig.md) — TUI for browsing git log, diff, blame, and refs
+- [tm-restore](tm-restore.md) — Restore from Time Machine — a file, folder, or the whole machine (two-drive setup)
+- [tmutil](tmutil.md) — Time Machine (tmutil/diskutil) command reference for the two-HDD backup strategy
 - [tree](tree.md) — recursive directory listing as a tree
+- [tundra](tundra.md) — <one-line description — what it does / what it replaces>
 - [uv](uv.md) — fast Python project/dependency/env manager
 - [vault](vault.md) — HashiCorp Vault; auth, KV secrets, dynamic creds, transit
 - [vd](vd.md) — VisiData TUI spreadsheet; opens CSV/JSON/SQLite/Parquet
