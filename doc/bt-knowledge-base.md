@@ -43,6 +43,7 @@ tool() {
 - [Claude Code](categories/claude-code.md)
 - [Cloud CLIs](categories/cloud-clis.md)
 - [Containers & Orchestration](categories/containers-orchestration.md)
+- [Dashhub & Observability](categories/dashhub-observability.md)
 - [Databases](categories/databases.md)
 - [Disk](categories/disk.md)
 - [Files & Directories](categories/files-directories.md)
