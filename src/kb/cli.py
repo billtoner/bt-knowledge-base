@@ -34,6 +34,7 @@ _ALIASES = {
     "c": "cats",
     "categories": "cats",
     "o": "open",
+    "v": "view",
     "img": "image",
     "att": "attach",
     "mv": "move",
@@ -412,6 +413,37 @@ def show(
         note = root.notes_dir / f"{tool}.md"
         if note.is_file():
             render_markdown(note.read_text(), raw=raw, pager=not no_pager)
+            return
+    _die(f"no note: {tool} (try: kb find {tool})")
+
+
+@app.command()
+def view(
+    tool: str = typer.Argument(..., help="note to render in a browser"),
+    browser: bool = typer.Option(
+        True, "--browser/--no-browser", help="open a browser (off: just print the URL)"
+    ),
+    port: int | None = typer.Option(None, "--port", "-p", help="serve on this port"),
+) -> None:
+    """Render a note as GitHub-flavored HTML in the browser (via grip; alias: v).
+
+    Serves the note's own directory, so its `assets/<slug>/` images resolve, then
+    opens your browser. Blocks until you stop it (Ctrl-C). Needs `grip` on PATH.
+    """
+    if not shutil.which("grip"):
+        _die("grip not found — install it (e.g. `brew install grip` / `pipx install grip`)")
+    for root in _roots():
+        note = root.notes_dir / f"{tool}.md"
+        if note.is_file():
+            cmd = ["grip", str(note)]
+            if port is not None:
+                cmd.append(str(port))
+            if browser:
+                cmd.append("--browser")
+            try:
+                subprocess.run(cmd)
+            except KeyboardInterrupt:
+                pass  # Ctrl-C stops the server; exit quietly rather than traceback.
             return
     _die(f"no note: {tool} (try: kb find {tool})")
 

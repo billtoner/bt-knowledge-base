@@ -46,6 +46,9 @@ kb delete <name>       # delete a note + unwire it (alias: rm; -y to skip confir
 kb show <name>         # print a note (renders via glow/bat + pages via $PAGER
                        #   when interactive; raw+unpaged when piped or --raw;
                        #   --no-pager for inline; alias: cat)
+kb view <name>         # render a note as HTML in the browser via grip (alias: v):
+                       #   assets/<slug>/ images resolve; --no-browser prints the URL;
+                       #   -p/--port to pick a port; Ctrl-C to stop
 kb sync                # stage + commit + push EVERY root in one go
                        #   -m "msg" custom message · --repo L only that root
                        #   --no-push commit only · --dry-run preview · skips a
