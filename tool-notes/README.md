@@ -23,6 +23,7 @@ For the style guide, see [`CLAUDE.md`](../CLAUDE.md).
 - [bq](bq.md) — BigQuery CLI; query, load, extract, manage datasets
 - [brew](brew.md) — Homebrew for macOS/Linux; formulae, casks, services
 - [broot](broot.md) — interactive tree navigator; fuzzy search + actions
+- [contacts](contacts.md) — search / dump / round-trip macOS Contacts from the CLI
 - [cron](cron.md) — scheduled jobs; crontab syntax + systemd-timer equivalents
 - [curl](curl.md) — HTTP(S) client; headers, methods, multipart, debug tracing
 - [davinci-resolve](davinci-resolve.md) — split-screen + color-managed video workflow (GUI; no CLI)

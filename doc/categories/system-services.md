@@ -10,3 +10,4 @@ Inspecting and controlling the running system — systemd units, the journal, an
 - [dmesg](../../tool-notes/dmesg.md) — kernel ring buffer; boot, hardware, OOM, driver messages
 - [systemd-analyze](../../tool-notes/systemd-analyze.md) — boot timing and unit verification for systemd
 - [macOS built-ins](../../tool-notes/macos.md) — native desktop utilities: screenshot capture shortcuts, Markup annotation (red arrows)
+- [contacts](../../tool-notes/contacts.md) — search / dump / round-trip macOS Contacts from the CLI
